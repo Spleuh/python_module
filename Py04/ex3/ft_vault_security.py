@@ -16,7 +16,7 @@ def vault_security():
         print(f"{e}")
     finally:
         print("Vault automatically sealed upon completion\n")
-        print("All vault operations completed with maximum security.")
+    print("All vault operations completed with maximum security.")
 
 
 if __name__ == "__main__":
