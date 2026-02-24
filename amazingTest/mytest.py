@@ -32,11 +32,11 @@ class MazeData:
 
     @staticmethod
     def init_size(maze_w: int, maze_h: int, img_maze: ImgData):
-         #print(maze_w, maze_h)
+        #print(img_maze.width, maze_w)
         if maze_w < maze_h:
-            return (int(img_maze.width / maze_h))
+            return (img_maze.width // maze_h)
         else:
-            return (int(img_maze.width / maze_w))
+            return (img_maze.width // maze_w)
 
     def set_color(self) -> None:
         self.color = self.new_color()
@@ -107,6 +107,8 @@ def draw_cell(
                 img_maze.data[pos + k] = (0xFFFFFF00 >> 8 * k) & 0xFF
     if value & 1 << 1:
         new_start = start + (size_cell * 4)
+        #if start + size_cell * 4 == img_maze.sl:
+            #new_start = start + (size_cell - 1) * 4
         for i in range(size_cell):
             pos = new_start + (i * img_maze.sl)
             # img_maze.data[pos: pos + 4] = (color).to_bytes(4, 'little')
@@ -116,13 +118,14 @@ def draw_cell(
     if value & 1 << 2:
         new_start = start + (size_cell * img_maze.sl)
         for i in range(0, size_cell * 4, 4):
+            # print(i)
             pos = new_start + i
             # img_maze.data[pos: pos + 4] = (color).to_bytes(4, 'little')
             # img_maze.data[pos: pos + 4] = (0xFFFFFF00).to_bytes(4, 'little')
             for k in range(4):
                 img_maze.data[pos + k] = (0xFFFFFF00 >> 8 * k) & 0xFF
     if value & 1 << 3:
-        for i in range(size_cell * 4, 4):
+        for i in range(size_cell):
             pos = start + (i * img_maze.sl)
             # img_maze.data[pos: pos + 4] = (0xFFFFFF00).to_bytes(4, 'little')
             for k in range(4):
@@ -131,15 +134,20 @@ def draw_cell(
 
 def draw_all(maze_data: MazeData, img_maze: ImgData):
     for i, value in enumerate(maze_data.grid):
-        # print(i)
+        #print(i)
         x = int(i % maze_data.width)
         y = int(i / maze_data.width)
-        print(x, y)
+        # print(x, y)
         # print(xvar.img_maze.sl)
-        # print(xvar.img_maze.sl)
-        start = y * maze_data.cell_size * xvar.img_maze.sl + \
-            ((x * maze_data.cell_size * xvar.img_maze.bpp) // 8)
-        draw_cell(start, value, maze_data.cell_size, maze_data.color, img_maze)
+        #start = y * maze_data.cell_size * xvar.img_maze.sl + \
+            #((x * maze_data.cell_size * xvar.img_maze.bpp) // 8)
+        pixel_x = x * maze_data.cell_size
+        pixel_y = y * maze_data.cell_size
+        opp = xvar.img_maze.bpp // 8
+        if x != 0:
+            pixel_x -= 1
+        offset = pixel_y * xvar.img_maze.sl + pixel_x * opp
+        draw_cell(offset, value, maze_data.cell_size, maze_data.color, img_maze)
 
 
 if __name__ == "__main__":
@@ -150,11 +158,12 @@ if __name__ == "__main__":
     xvar.mlx_ptr = xvar.mlx.mlx_init()
     xvar.win_1 = xvar.mlx.mlx_new_window(
         xvar.mlx_ptr, 1200, 1200, "A-maze-ing")
-    xvar.img_maze.img = xvar.mlx.mlx_new_image(xvar.mlx_ptr, 1200, 1200)
+    xvar.img_maze.img = xvar.mlx.mlx_new_image(xvar.mlx_ptr, 1000, 1000)
     xvar.img_maze.data, xvar.img_maze.bpp, xvar.img_maze.sl, xvar.img_maze.iformat = xvar.mlx.mlx_get_data_addr(
         xvar.img_maze.img)
-    xvar.img_maze.width = 1200
-    xvar.img_maze.height = 1200
+    # print(xvar.img_maze.iformat)
+    xvar.img_maze.width = 1000
+    xvar.img_maze.height = 1000
     test = [
         13,
         5,
@@ -456,15 +465,14 @@ if __name__ == "__main__":
         4,
         6,
         14]
-    truc = [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15,15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 ,15 ,15 ,15 ,15 ,15 ,15]
-    width = 20
-    height = 15
-    maze_data = MazeData(test, width, height, xvar.img_maze)
+    truc = [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
+    width = 10
+    height = 5
+    maze_data = MazeData(truc, width, height, xvar.img_maze)
     # print("test")
     draw_all(maze_data, xvar.img_maze)
     xvar.mlx.mlx_put_image_to_window(
-        xvar.mlx_ptr, xvar.win_1, xvar.img_maze.img, 0, 0)
-
+        xvar.mlx_ptr, xvar.win_1, xvar.img_maze.img, 100, 50)
     # loop
     xvar.mlx.mlx_mouse_hook(xvar.win_1, gere_mouse_1, xvar)
     xvar.mlx.mlx_hook(xvar.win_1, 33, 0, gere_close_1, xvar)
