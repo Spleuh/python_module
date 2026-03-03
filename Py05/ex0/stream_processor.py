@@ -1,4 +1,4 @@
-from typing import Any, List, Dict, Union, Optional
+from typing import Any
 from abc import ABC, abstractmethod
 
 
@@ -20,19 +20,19 @@ class NumericProcessor(DataProcessor):
         print("Initializing Numeric Processor...")
 
     def process(self, data: Any) -> str:
+        print(f"Processing data: {data}")
         try:
-            print(f"Processing data: {data}")
             sum_data: int = sum(data)
             avg_data: float = sum_data / len(data)
-            str_data: str = f"Processed {
-                len(data)} numeric values, {sum_data}, avg={
-                avg_data:.2f}"
         except Exception as e:
             print({e})
         else:
+            str_data: str = (f"Processed {len(data)} numeric "
+                             f"values, {sum_data}, avg={avg_data:.2f}")
             return str_data
 
     def validate(self, data: Any) -> bool:
+
         try:
             iter_data = iter(data)
             for data in iter_data:
@@ -41,7 +41,7 @@ class NumericProcessor(DataProcessor):
             print(f"{e}")
             return False
         else:
-            print(f"Validation: Numeric data verified")
+            print("Validation: Numeric data verified")
             return True
 
 
@@ -51,10 +51,8 @@ class TextProcessor(DataProcessor):
 
     def process(self, data: Any) -> str:
         try:
-            str_data: str = f"Processed text: {
-                len(data)} characters, {
-                len(
-                    data.split(" "))} words"
+            str_data: str = (f"Processed text: {len(data)} characters"
+                             f", {len(data.split(' '))} words")
         except Exception as e:
             print({e})
         else:
@@ -67,7 +65,7 @@ class TextProcessor(DataProcessor):
             print(f"{e}")
             return False
         else:
-            print(f"Validation: Text data verified")
+            print("Validation: Text data verified")
             return True
 
 
@@ -77,9 +75,11 @@ class LogProcessor(DataProcessor):
 
     def process(self, data: Any) -> str:
         try:
-            alert: str
-            str_data: str = f"[ALERT] {
-                data.split(":")[0]} level detected: Connection timeout"
+            alert_level = data.split(':')[0]
+            str_data: str = (
+                f"[ALERT] {alert_level} level detected: "
+                "Connection timeout"
+            )
         except Exception as e:
             print({e})
         else:
@@ -93,7 +93,7 @@ class LogProcessor(DataProcessor):
         except Exception as e:
             print(f"{e}")
         else:
-            print(f"Validation: Log entry verified")
+            print("Validation: Log entry verified")
             return True
 
 
