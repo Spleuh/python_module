@@ -107,8 +107,27 @@ class StreamProcessor():
         self.streams = streams
 
     def process(self,  data_batch: List[Any]):
-        for stream in self.streams:
-            stream.process_batch(data_batch)
+        try:
+            for stream in self.streams:
+                stream.process_batch(data_batch)
+        except Exception as e:
+            print(f"{e}")
+
+    def get_data(self, id: str):
+        data = [stream for stream in self.streams if stream.id == id][0].data
+        return data
+
+    def get_sens_crit(self,
+                      id: str,
+                      criteria: str,
+                      value: int | float) -> List[str]:
+        data = self.get_data(id)
+        data_crit = ([dat for dat in data
+                      for key_value in [dat.split(":")]
+                      if key_value[0] == criteria and
+                      isinstance(convert(key_value[1]), (int, float)) and
+                      convert(key_value[1]) > value])
+        return data_crit
 
 
 if __name__ == "__main__":
@@ -117,8 +136,8 @@ if __name__ == "__main__":
         "SENSOR_001:temp:22.5",
         "SENSOR_001:humidity:65",
         "SENSOR_001:pressure:1013",
-        "SENSOR_002:temp:23.1",
-        "SENSOR_002:humidity:60",
+        "SENSOR_002:temp:55.2",
+        "SENSOR_002:temp:60.2",
 
         # TransactionStream
         "TRANS_001:buy:100",
@@ -126,41 +145,73 @@ if __name__ == "__main__":
         "TRANS_001:buy:75",
         "TRANS_002:buy:200",
         "TRANS_002:sell:50",
+        "TRANS_002:sell:100",
+        "TRANS_002:buy:100"
 
         # EventStream
         "EVENT_001:login",
         "EVENT_001:error",
         "EVENT_001:logout",
         "EVENT_002:shutdown",
-        "EVENT_002:restart"
+        "EVENT_002:restart",
+        "EVENT_002:shutdown",
     ]
+    try:
+        print('=== CODE NEXUS - POLYMORPHIC STREAM SYSTEM ===\n')
 
-    print('=== CODE NEXUS - POLYMORPHIC STREAM SYSTEM ===\n')
+        print("Initializing Sensor Stream...")
+        env_type = "Environmental Data:temp:humidity:pressure"
+        sens_001 = SensorStream("SENSOR_001", env_type)
+        s_data = sens_001.process_batch(data_batch)
+        print(f"Stream ID: {sens_001.id}, Type: {sens_001.type}")
+        print(f"Processing sensor batch: [{s_data}]")
+        print(f"Sensor analysis: {len(sens_001.data)} readings processed, "
+              f"avg tmp: {sens_001.get_stats()['temp']}")
 
-    print("Initializing Sensor Stream...")
-    env_type = "Environmental Data:temp:humidity:pressure"
-    sens_001 = SensorStream("SENSOR_001", env_type)
-    s_data = sens_001.process_batch(data_batch)
-    print(f"Stream ID: {sens_001.id}, Type: {sens_001.type}")
-    print(f"Processing sensor batch: [{s_data}]")
-    print(f"Sensor analysis: {len(sens_001.data)} readings processed, "
-          f"avg tmp: {sens_001.get_stats()['temp']}")
+        print("\nInitializing Transaction Stream...")
+        fin_type = " Financial Data:buy:sell"
+        trans_001 = TransactionStream("TRANS_001", fin_type)
+        t_data = trans_001.process_batch(data_batch)
+        print(f"Stream ID: {trans_001.id}, Type: {trans_001.type}")
+        print(f"Processing transaction batch: [{t_data}]")
+        net_flow = trans_001.get_stats()
+        print(f"Transaction analysis: {len(trans_001.data)} operations, "
+              f"net flow: {'+' if net_flow['net_flow'] > 0 else ''}"
+              f"{net_flow['net_flow']} units")
 
-    print("\nInitializing Transaction Stream...")
-    fin_type = " Financial Data:buy:sell"
-    trans_001 = TransactionStream("TRANS_001", fin_type)
-    t_data = trans_001.process_batch(data_batch)
-    print(f"Stream ID: {trans_001.id}, Type: {trans_001.type}")
-    print(f"Processing transaction batch: [{t_data}]")
-    net_flow = trans_001.get_stats()
-    print(f"Transaction analysis: {len(trans_001.data)} operations, net flow: "
-          f"{'+' if net_flow['net_flow'] > 0 else ''}{net_flow['net_flow']} units")
+        print("\nInitializing Event Stream...")
+        eve_type = "System Even:login:error:logout"
+        even_001 = EventStream("EVENT_001", eve_type)
+        e_data = even_001.process_batch(data_batch)
+        print(f"Stream ID: {even_001.id}, Type: {even_001.type}")
+        print(f"Processing event batch: [{e_data}]")
+        n_error = even_001.get_stats()["error"]
+        print(f"Event analysis: {len(even_001.data)} events, "
+              f"{n_error} error detected")
 
-    print("\nInitializing Event Stream...")
-    eve_type = "System Even:login:error:logout"
-    even_001 = EventStream("EVENT_001", eve_type)
-    e_data = even_001.process_batch(data_batch)
-    print(f"Stream ID: {even_001.id}, Type: {even_001.type}")
-    print(f"Processing event batch: [{e_data}]")
-    n_error = even_001.get_stats()["error"]
-    print(f"Event analysis: {len(even_001.data)} events, {n_error} error detected")
+        print("\n=== Polymorphic Stream Processing ===")
+        print("Processing mixed stream types through unified interface...\n")
+        sensor = SensorStream("SENSOR_002", env_type)
+        trans = TransactionStream("TRANS_002", fin_type)
+        even_type = "System Even:login:shutdown:restart"
+        even = EventStream("EVENT_002", even_type)
+        mixed_stream = [sensor, trans, even]
+        processor = StreamProcessor(mixed_stream)
+        processor.process(data_batch)
+        print("Batch 1 Results:")
+        print(f"- Sensor data: {len(processor.get_data('SENSOR_002'))} "
+              "readings processed")
+        print(f"- Transaction data: {len(processor.get_data('TRANS_002'))} "
+              "operations processed")
+        print(f"- Event data: {len(processor.get_data('EVENT_002'))} "
+              "events processed")
+        sensor_crit = processor.get_sens_crit('SENSOR_002', "temp", 50)
+        large_transac = processor.get_sens_crit('TRANS_002', "buy", 150)
+        print("\nStream filtering active: High-priority data only")
+        print(f"Filtered results: {len(sensor_crit)} critical sensor alerts, "
+              f"{len(large_transac)} large transaction")
+    except Exception as e:
+        print({e})
+    else:
+        print("\nAll streams processed "
+              "successfully. Nexus throughput optimal.")
