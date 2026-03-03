@@ -30,6 +30,7 @@ class OutputStage:
     def process(self, data: Any) -> str:
         return data
 
+
 class ProcessingPipeline(ABC):
     def __init__(self):
         self.stages: list[ProcessingStage] = []
@@ -40,6 +41,7 @@ class ProcessingPipeline(ABC):
     @abstractmethod
     def process(self, data: Any) -> Any:
         pass
+
 
 class JSONAdapter(ProcessingPipeline):
     def __init__(self):
@@ -60,6 +62,7 @@ class CVSAdapter(ProcessingPipeline):
             data = stage.process(data)
         return data
 
+
 class StreamAdapter(ProcessingPipeline):
     def __init__(self):
         super().__init__()
@@ -68,6 +71,7 @@ class StreamAdapter(ProcessingPipeline):
         for stage in self.stages:
             data = stage.process(data)
         return data
+
 
 class NexusManager:
     def __init__(self):
