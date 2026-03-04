@@ -8,6 +8,11 @@ class ErrorJSON(Exception):
         super().__init__(*args)
 
 
+class ErrorCVS(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
 class ErrorStage(Exception):
     def __init__(self, *args):
         super().__init__(*args)
@@ -68,32 +73,9 @@ class OutputStage:
     def process(self, data: Any) -> str:
         result = ""
         if data['transformed']:
-            if data["adapter"] == "json":
-                result = self.format_json(data)
-            elif data["adapter"] == "cvs":
-                result = "Output: User activity logged: "
-            elif data["adapter"] == "stream":
-                result = "Output: Stream summary: "
-            else:
-                raise ErrorStage("Error Outpustage: adapter unknown: "
-                                 f"{data.get('adapter')}")
+            result = "Output: "
         else:
-            raise ErrorStage(f"Error Stage 2, data not transformed: {data}")
-        return result
-
-    def format_json(self, data: Any) -> str:
-        temp = data['value']
-        unit = data['unit']
-        if not isinstance(temp, float):
-            raise ErrorStage(f"Error type: temp {temp}")
-        if 12 < temp < 32:
-            range = "(Normal range)"
-        else:
-            range = ""
-        if unit not in ["K", "C", "F"]:
-            raise ErrorStage(f"Error type: unit {unit}")
-        result = ("Output: Processed temperature reading: "
-                  f"{temp}°{unit} {range}")
+            raise ErrorStage(f"Error Stage 2, data not transfomed: {data}")
         return result
 
 
@@ -104,10 +86,14 @@ class ProcessingPipeline(ABC):
     def add_stage(self, stage: ProcessingStage):
         self.stages.append(stage)
 
-    @abstractmethod
-    def process(self, data: Any) -> Any:
+    def stage_process(self, data: Any) -> Any:
         for stage in self.stages:
             data = stage.process(data)
+        return data
+
+    @abstractmethod
+    def process(self, data: Any) -> Any:
+        pass
 
 
 def convert(value: Any) -> str | int | float:
@@ -127,32 +113,50 @@ class JSONAdapter(ProcessingPipeline):
     def __init__(self):
         super().__init__()
 
-    def validate(self, tmp: list[list[str]]) -> bool:
-        for i in tmp:
-            for j in i:
-                if not isinstance(j[0], str):
+    def validate(self, data: dict[str, str]) -> bool:
+        for i in data.items():
+            tmp = convert(i[1])
+            if convert(i[0]) == "value":
+                if not isinstance(tmp, float):
                     return False
+            elif not isinstance(i[0], str) or not isinstance(tmp, (str)):
+                return False
         return True
 
-    def pre_process(self, data: Any):
-        result: dict[str: str | float] = {}
+    def pre_process(self, data: Any) -> Any:
         if isinstance(data, str):
             tmp = data.split(",")
             tmp = [splited for t in tmp for splited in [t.split(":")]]
-            if not self.validate(tmp):
-                raise ErrorJSON("Data not formated, type value != str "
-                                f"or float {tmp}")
             result = {str(kv[0]): str(kv[1]) for kv in tmp}
-            print(type(result))
-            print(result)
+        elif isinstance(data, dict):
+            result = data
+        else:
+            raise ErrorJSON(f"Error format data not supported: {data}")
+        if not self.validate(result):
+            raise ErrorJSON("Data not formated, type value != str "
+                            f"or float {result}")
+        return result
 
-    def post_process(self, data: Any):
-        pass
+    def post_process(self, data: Any) -> str:
+        temp = data['value']
+        unit = data['unit']
+        temp = convert(temp)
+        if not isinstance(temp, float):
+            raise ErrorStage(f"Error type: temp {temp}")
+        if 12 < temp < 32:
+            range = "(Normal range)"
+        else:
+            range = ""
+        if unit not in ["K", "C", "F"]:
+            raise ErrorStage(f"Error type: unit {unit}")
+        result = ("Processed temperature reading: "
+                  f"{temp}°{unit} {range}")
+        return result
 
     def process(self, data: Any) -> Union[str, Any]:
         data = self.pre_process(data)
-        result = super().process(data)
-        result = self.post_process(result)
+        result = super().stage_process(data)
+        result = result + self.post_process(data)
         return result
 
 
@@ -160,10 +164,36 @@ class CSVStream(ProcessingPipeline):
     def __init__(self):
         super().__init__()
 
+    def validate(self, data: str) -> bool:
+        tmp = data.split(",")
+        for i in tmp:
+            if i not in ["user", "action", "timestamp"]:
+                return False
+        return True
+
+    def pre_process(self, data: Any) -> Any:
+        if isinstance(data, str):
+            result = data
+        elif isinstance(data, list):
+            result = ",".join(data)
+        else:
+            raise ErrorCVS(f"Error format data not supported: {data}")
+        if not self.validate(result):
+            raise ErrorCVS("Data not formated, keyword unknown "
+                           f"(user, action, timestamp): {result}")
+        return result
+
+    def post_process(self, data: Any) -> Any:
+        data = data.split(",")
+        action = len([count for count in data if count == "action"])
+        result = f"User activity logged: {action} actions processed"
+        return result
+
     def process(self, data: Any) -> Union[str, Any]:
-        for stage in self.stages:
-            data = stage.process(data)
-        return data
+        data = self.pre_process(data)
+        result = super().stage_process(data)
+        result = result + self.post_process(data)
+        return result
 
 
 class StreamAdapter(ProcessingPipeline):
@@ -189,11 +219,29 @@ class NexusManager:
 
 
 if __name__ == "__main__":
-    jtest = JSONAdapter()
-    jtest.add_stage(InputStage())
-    jtest.add_stage(TransformStage())
-    jtest.add_stage(OutputStage())
-    data_test = {"sensor": "temp", "value": 23.5, "unit": "C"}
-    str_test = "sensor:temp,value:23.5,unit:C"
-    str_test = jtest.process(str_test)
-    print(str_test)
+    try:
+        jtest = JSONAdapter()
+        jtest.add_stage(InputStage())
+        jtest.add_stage(TransformStage())
+        jtest.add_stage(OutputStage())
+        csvtset = CSVStream()
+        csvtset.add_stage(InputStage())
+        csvtset.add_stage(TransformStage())
+        csvtset.add_stage(OutputStage())
+        streamtest = StreamAdapter()
+        streamtest.add_stage(InputStage())
+        streamtest.add_stage(TransformStage())
+        streamtest.add_stage(OutputStage())
+
+        data_test = {"sensor": "temp", "value": 23.5, "unit": "C"}
+        str_test = "sensor:temp,value:23.5,unit:C"
+        str_test = jtest.process(str_test)
+        print(str_test)
+
+        csv_data = "user,action,timestamp"
+        result_csv = csvtset.process(csv_data)
+        print(result_csv)
+
+        stream_data = 
+    except Exception as e:
+        print(f"{e}")
