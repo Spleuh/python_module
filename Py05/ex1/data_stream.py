@@ -17,7 +17,7 @@ def convert(value: Any) -> int | float | str | None:
 
 
 class DataStream(ABC):
-    def __init__(self, stream_id: str, types: List[str]):
+    def __init__(self, stream_id: str, types: str) -> None:
         self.id = stream_id
         type_criterias = types.split(':')
         self.type = type_criterias[0]
@@ -31,7 +31,7 @@ class DataStream(ABC):
             self,
             data_batch: List[Any],
             criteria: Optional[str] = None) -> List[Any]:
-        if criteria is None:
+        if criteria is "":
             return ([data.split(":", 1)[1] for data in data_batch if
                      isinstance(data, str) and
                      len([crit for crit in self.lst_crit if
@@ -46,10 +46,10 @@ class DataStream(ABC):
 
 
 class SensorStream(DataStream):
-    def __init__(self, stream_id: str, types: str):
+    def __init__(self, stream_id: str, types: str = "") -> None:
         super().__init__(stream_id, types)
 
-    def process_batch(self, data_batch) -> str:
+    def process_batch(self, data_batch: list[Any]) -> str:
         self.data = self.filter_data(data_batch)
         return ", ".join(self.data)
 
@@ -67,14 +67,14 @@ class SensorStream(DataStream):
 
 
 class TransactionStream(DataStream):
-    def __init__(self, stream_id, types):
+    def __init__(self, stream_id: str, types: str = "") -> None:
         super().__init__(stream_id, types)
 
-    def process_batch(self, data_batch) -> str:
+    def process_batch(self, data_batch: list[any]) -> str:
         self.data = self.filter_data(data_batch)
         return ", ".join(self.data)
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) ->  Dict[str, Union[str, int, float]]:
         stats = {"net_flow": 0}
         values = []
         for t in self.lst_crit:
@@ -90,30 +90,30 @@ class TransactionStream(DataStream):
 
 
 class EventStream(DataStream):
-    def __init__(self, stream_id, types):
+    def __init__(self, stream_id: str, types: str = "") -> None:
         super().__init__(stream_id, types)
 
-    def process_batch(self, data_batch):
+    def process_batch(self, data_batch: list[any]) -> str:
         self.data = self.filter_data(data_batch)
         return ", ".join(self.data)
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) ->  Dict[str, Union[str, int, float]]:
         stats = {key: self.data.count(key) for key in self.data}
         return stats
 
 
 class StreamProcessor():
-    def __init__(self, streams: List[DataStream]):
+    def __init__(self, streams: List[DataStream]) -> None:
         self.streams = streams
 
-    def process(self,  data_batch: List[Any]):
+    def process(self,  data_batch: List[Any]) -> None:
         try:
             for stream in self.streams:
                 stream.process_batch(data_batch)
         except Exception as e:
             print(f"{e}")
 
-    def get_data(self, id: str):
+    def get_data(self, id: str) -> list[str]:
         data = [stream for stream in self.streams if stream.id == id][0].data
         return data
 

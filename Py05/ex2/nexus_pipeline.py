@@ -5,27 +5,27 @@ import random
 
 
 class ErrorChaining(Exception):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
 class ErrorJSON(Exception):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
 class ErrorCSV(Exception):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
 class ErrorStream(Exception):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
 class ErrorStage(Exception):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
@@ -75,11 +75,11 @@ class OutputStage:
 
 
 class ProcessingPipeline(ABC):
-    def __init__(self, id: str):
+    def __init__(self, id: str) -> None:
         self.stages: list[ProcessingStage] = []
         self.id = id
 
-    def add_stage(self, stage: ProcessingStage):
+    def add_stage(self, stage: ProcessingStage) -> None:
         self.stages.append(stage)
 
     def stage_process(self, data: Any) -> Any:
@@ -106,7 +106,7 @@ def convert(value: Any) -> str | int | float:
 
 
 class JSONAdapter(ProcessingPipeline):
-    def __init__(self, id: str):
+    def __init__(self, id: str) -> None:
         super().__init__(id)
 
     def validate(self, data: dict[str, str]) -> bool:
@@ -161,7 +161,7 @@ class JSONAdapter(ProcessingPipeline):
 
 
 class CSVAdapter(ProcessingPipeline):
-    def __init__(self, id: str):
+    def __init__(self, id: str) -> None:
         super().__init__(id)
 
     def validate(self, data: dict) -> bool:
@@ -199,7 +199,7 @@ class CSVAdapter(ProcessingPipeline):
 
 
 class StreamAdapter(ProcessingPipeline):
-    def __init__(self, id: str):
+    def __init__(self, id: str) -> None:
         super().__init__(id)
 
     def validate(self, data: dict) -> bool:
@@ -243,10 +243,10 @@ class StreamAdapter(ProcessingPipeline):
 
 
 class Pipeline_A(ProcessingPipeline):
-    def __init__(self, id: str):
+    def __init__(self, id: str) -> None:
         super().__init__(id)
 
-    def process(self, data):
+    def process(self, data: Any) -> Any:
         if not isinstance(data, str):
             raise ErrorChaining(f"ErrorChaining data type: {data}")
         result = data.split(",")
@@ -255,7 +255,7 @@ class Pipeline_A(ProcessingPipeline):
 
 
 class Pipeline_B(ProcessingPipeline):
-    def __init__(self, id: str):
+    def __init__(self, id: str) -> None:
         super().__init__(id)
 
     def init_dict(self, data: list) -> dict:
@@ -278,7 +278,7 @@ class Pipeline_B(ProcessingPipeline):
                 return False
         return True
 
-    def process(self, data):
+    def process(self, data: any) -> Any:
         if not isinstance(data, list):
             raise ErrorChaining(f"ErrorChaining input: {data}")
         if not self.verif(data):
@@ -292,7 +292,7 @@ class Pipeline_C(ProcessingPipeline):
     def __init__(self, id: str):
         super().__init__(id)
 
-    def process(self, data):
+    def process(self, data: any):
         avg = data['temp'] / data['count']
         data['avg'] = f"{avg:.2f}"
         return dict(data)

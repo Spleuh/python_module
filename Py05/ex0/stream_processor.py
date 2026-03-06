@@ -16,7 +16,7 @@ class DataProcessor(ABC):
 
 
 class NumericProcessor(DataProcessor):
-    def __init__(self):
+    def __init__(self) -> None:
         print("Initializing Numeric Processor...")
 
     def process(self, data: Any) -> str:
@@ -46,7 +46,7 @@ class NumericProcessor(DataProcessor):
 
 
 class TextProcessor(DataProcessor):
-    def __init__(self):
+    def __init__(self) -> None:
         print("Initializing Text Processor...")
 
     def process(self, data: Any) -> str:
@@ -70,7 +70,7 @@ class TextProcessor(DataProcessor):
 
 
 class LogProcessor(DataProcessor):
-    def __init__(self):
+    def __init__(self) -> None:
         print("Initializing Log Processor...")
 
     def process(self, data: Any) -> str:
