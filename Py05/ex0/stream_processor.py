@@ -117,6 +117,9 @@ def data_processor() -> None:
     except Exception as e:
         print(f"{e}")
 
+def caca(procsessor: DataProcessor) -> None:
+    procsessor.process()
+
 
 if __name__ == "__main__":
     data_processor()

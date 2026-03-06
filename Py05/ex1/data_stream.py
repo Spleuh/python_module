@@ -31,7 +31,7 @@ class DataStream(ABC):
             self,
             data_batch: List[Any],
             criteria: Optional[str] = None) -> List[Any]:
-        if criteria is "":
+        if criteria is None:
             return ([data.split(":", 1)[1] for data in data_batch if
                      isinstance(data, str) and
                      len([crit for crit in self.lst_crit if
@@ -146,7 +146,7 @@ if __name__ == "__main__":
         "TRANS_002:buy:200",
         "TRANS_002:sell:50",
         "TRANS_002:sell:100",
-        "TRANS_002:buy:100"
+        "TRANS_002:buy:100",
 
         # EventStream
         "EVENT_001:login",
@@ -180,7 +180,7 @@ if __name__ == "__main__":
               f"{net_flow['net_flow']} units")
 
         print("\nInitializing Event Stream...")
-        eve_type = "System Even:login:error:logout"
+        eve_type = "System Event:login:error:logout"
         even_001 = EventStream("EVENT_001", eve_type)
         e_data = even_001.process_batch(data_batch)
         print(f"Stream ID: {even_001.id}, Type: {even_001.type}")
