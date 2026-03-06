@@ -17,7 +17,7 @@ class DataProcessor(ABC):
 
 class NumericProcessor(DataProcessor):
     def __init__(self) -> None:
-        print("Initializing Numeric Processor...")
+        super().__init__()
 
     def process(self, data: Any) -> str:
         print(f"Processing data: {data}")
@@ -47,7 +47,7 @@ class NumericProcessor(DataProcessor):
 
 class TextProcessor(DataProcessor):
     def __init__(self) -> None:
-        print("Initializing Text Processor...")
+        super().__init__()
 
     def process(self, data: Any) -> str:
         try:
@@ -71,7 +71,7 @@ class TextProcessor(DataProcessor):
 
 class LogProcessor(DataProcessor):
     def __init__(self) -> None:
-        print("Initializing Log Processor...")
+        super().__init__()
 
     def process(self, data: Any) -> str:
         try:
@@ -102,23 +102,28 @@ def data_processor() -> None:
     try:
         numeric: NumericProcessor = NumericProcessor()
         test: list[int] = [1, 2, 3, 4, 5]
-        numeric.validate(test)
-        print(f"{numeric.format_output(numeric.process(test))}")
-        print()
         text: TextProcessor = TextProcessor()
         text_test: str = "Hello Nexus World"
-        text.validate(text_test)
-        print(f"{text.format_output(text.process(text_test))}")
-        print()
         log: LogProcessor = LogProcessor()
         log_test: str = "ERROR: Connection timeout"
-        log.validate(log_test)
-        print(f"{log.format_output(log.process(log_test))}")
+        lst_proc: list[DataProcessor] = []
+        lst_proc.append(numeric)
+        lst_proc.append(text)
+        lst_proc.append(log)
+        lst_data: list[Any] = []
+        lst_data.append(test)
+        lst_data.append(text_test)
+        lst_data.append(log_test)
+        for i, proc in enumerate(lst_proc):
+            class_name = proc.__class__.__name__
+            class_output = ''.join([' ' + c if c.isupper()
+                                    else c for c in class_name])
+            print(f"Initializing{class_output}...")
+            proc.validate(lst_data[i])
+            print(f"{proc.format_output(proc.process(lst_data[i]))}")
+            print()
     except Exception as e:
         print(f"{e}")
-
-def caca(procsessor: DataProcessor) -> None:
-    procsessor.process()
 
 
 if __name__ == "__main__":

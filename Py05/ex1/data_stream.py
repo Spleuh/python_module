@@ -74,7 +74,7 @@ class TransactionStream(DataStream):
         self.data = self.filter_data(data_batch)
         return ", ".join(self.data)
 
-    def get_stats(self) ->  Dict[str, Union[str, int, float]]:
+    def get_stats(self) -> Dict[str, Union[str, int, float]]:
         stats = {"net_flow": 0}
         values = []
         for t in self.lst_crit:
@@ -97,7 +97,7 @@ class EventStream(DataStream):
         self.data = self.filter_data(data_batch)
         return ", ".join(self.data)
 
-    def get_stats(self) ->  Dict[str, Union[str, int, float]]:
+    def get_stats(self) -> Dict[str, Union[str, int, float]]:
         stats = {key: self.data.count(key) for key in self.data}
         return stats
 
