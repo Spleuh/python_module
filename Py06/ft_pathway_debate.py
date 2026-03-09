@@ -1,6 +1,6 @@
 from alchemy.transmutation.basic import lead_to_gold, stone_to_gem
 from alchemy.transmutation.advanced import philosophers_stone, elixir_of_life
-import alchemy
+import alchemy.transmutation
 
 
 def demo():
@@ -18,7 +18,7 @@ def demo():
     print('alchemy.transmutation.philosophers_stone(): '
           f'{alchemy.transmutation.philosophers_stone()}\n')
 
-    print('Both pathways work! Absolute: clear, Realtive: concise')
+    print('Both pathways work! Absolute: clear, Relative: concise')
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 import alchemy
 from alchemy.elements import create_water, create_fire, create_earth
 from alchemy.potions import strength_potion
-from alchemy import heal
+from alchemy.potions import healing_potion as heal
 
 
 def demo() -> None:
