@@ -13,7 +13,7 @@ def demo() -> None:
     print(f'create_water(): {create_water()}\n')
 
     print('Method 3 - Aliased import:')
-    print(f'heal():{heal()}\n')
+    print(f'heal(): {heal()}\n')
 
     print('Method 4 - Multiple imports: ')
     print(f'create_earth(): {create_earth()}')

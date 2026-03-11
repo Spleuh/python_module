@@ -7,4 +7,4 @@ def record_spell(spell_name: str, ingredients: str) -> str:
         tmp = 'rejected'
     else:
         tmp = 'recorded'
-    return ("Spell" + tmp + f": {spell_name} ({result})")
+    return ("Spell " + tmp + f": {spell_name} ({result})")
