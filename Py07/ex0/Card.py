@@ -20,15 +20,26 @@ class Card(ABC):
         if cost < 0:
             raise ErrorCard(f"Error Card: cost cant be < 0: {cost}")
         try:
-            self.rarity = Rarity[rarity]
-        except KeyError:
+            self.rarity = Rarity(rarity)
+        except Exception:
             raise ErrorCard(f"Error Card: Rarity unknown: {rarity}")
         self.name = name
         self.cost = cost
 
+    def play(self, game_state: dict) -> dict:
+        pass
+
+    def get_card_info(self) -> dict:
+        info = {}
+        info.update({"name": self.name, "cost": self.cost,
+                    "rarity": self.rarity.value})
+        return info
+
 
 if __name__ == '__main__':
+    test = None
     try:
-        Card('test', 8, 'test')
+        test = Card('test', 8, 'Legendary')
     except ErrorCard as e:
         print(f"{e}")
+    print(test.get_card_info())
