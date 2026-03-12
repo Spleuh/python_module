@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from enum import Enum
 
 
@@ -8,38 +8,39 @@ class Rarity(Enum):
     LEGENDARY = "Legendary"
 
 
-class ErrorCard(Exception):
+class ErrCard(Exception):
     def __init__(self, *args):
         super().__init__(*args)
 
 
 class Card(ABC):
-    def __init__(self, name: str, cost: int, rarity: str):
+    def __init__(self, name: str, cost: int, rarity: str) -> None:
         if name == '':
-            raise ErrorCard(f"Error Card: name cant be '': {name}")
-        if cost < 0:
-            raise ErrorCard(f"Error Card: cost cant be < 0: {cost}")
+            raise ErrCard(f"ErrorCard: name cant be '': {name}")
+        if isinstance(cost, int) and cost < 0:
+            raise ErrCard(f"ErrorCard: cost cant be < 0: {cost}")
         try:
-            self.rarity = Rarity(rarity)
+            Rarity(rarity)
         except Exception:
-            raise ErrorCard(f"Error Card: Rarity unknown: {rarity}")
-        self.name = name
-        self.cost = cost
+            raise ErrCard(f"ErrorCard: Rarity unknown: {rarity}")
+        info = {'name': name, 'cost': cost, 'rarity': rarity}
+        self.info = info
 
+    @abstractmethod
     def play(self, game_state: dict) -> dict:
-        pass
+        result: dict = {'card_played': self.info['name'],
+                        'mana_used': self.info['cost']}
+        if not self.is_playable(game_state['available_mana']):
+            raise ErrCard("CardError: Not enough mana to play this card: "
+                          f"available_mana:{game_state['available_mana']}, "
+                          f"cost:{self.info['cost']}")
+        return result
 
     def get_card_info(self) -> dict:
-        info = {}
-        info.update({"name": self.name, "cost": self.cost,
-                    "rarity": self.rarity.value})
-        return info
+        return self.info
 
-
-if __name__ == '__main__':
-    test = None
-    try:
-        test = Card('test', 8, 'Legendary')
-    except ErrorCard as e:
-        print(f"{e}")
-    print(test.get_card_info())
+    def is_playable(self, available_mana: int) -> bool:
+        if (isinstance(self.info['cost'], int) and
+                available_mana >= self.info['cost']):
+            return True
+        return False
