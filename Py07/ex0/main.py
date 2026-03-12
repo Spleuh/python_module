@@ -2,7 +2,7 @@ from ex0.CreatureCard import CreatureCard, ErrCreatureC
 from ex0.Card import ErrCard
 
 
-def main():
+def main() -> None:
     print('=== DataDeck Card Foundation ===\n')
     print('Testing Abstract Base Class Design:\n')
     print('CreatureCard Info:')

@@ -14,7 +14,7 @@ class CreatureCard(Card):
             raise ErrCreatureC(f"ErrorCreature: health < 1: {health}")
         if attack < 0:
             raise ErrCreatureC(f"ErrorCreature: attack < 0: {attack}")
-        self.info.update({'type': 'Creature', 'attack': attack,
+        self.info.update({'type': 'creature', 'attack': attack,
                           'health': health})
 
     def play(self, game_state) -> dict:
@@ -24,10 +24,11 @@ class CreatureCard(Card):
 
     def attack_target(self, target: Card) -> dict:
         result = {'attacker': self.info['name'], 'target': target.info['name']}
-        if target.info['type'] == 'Creature' and target.info['health'] > 0:
+        if target.info['type'] == 'creature' and target.info['health'] > 0:
             dmg_dealt = min(self.info['attack'], target.info['health'])
             result.update({'damage_dealt': dmg_dealt, 'combat_resolved': True})
         else:
             raise ErrCreatureC("ErrorCreature: Target is not a "
-                               f"creature: {target.info['name']}")
+                               f"creature or target's health is 0: {target.info['name']} "
+                               f"{target.info['name']}")
         return result

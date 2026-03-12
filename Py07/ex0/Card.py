@@ -9,7 +9,7 @@ class Rarity(Enum):
 
 
 class ErrCard(Exception):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 

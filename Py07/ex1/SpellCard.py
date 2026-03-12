@@ -1,10 +1,10 @@
 from ex0.Card import Card, ErrCard
-from ex0.CreatureCard import CreatureCard, ErrCreatureC
-import random
+from ex0.CreatureCard import CreatureCard
+from random import randint
 
 
 class ErrSpellC(ErrCard):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
@@ -12,7 +12,7 @@ class SpellCard(Card):
     def __init__(self, name: str, cost: int, rarity: str,
                  effect_type: str) -> None:
         super().__init__(name, cost, rarity)
-        self.info['effect_type'] = effect_type
+        self.info.update({'type': 'spell', 'effect_type': effect_type})
 
     def play(self, game_state: dict) -> dict:
         result = super().play(game_state)
@@ -22,7 +22,7 @@ class SpellCard(Card):
     def resolve_effect(self, targets: list[CreatureCard]) -> dict:
         if len(targets) == 0:
             raise ErrSpellC(f'ErrSpellC: lst targets is empty: {targets}')
-        i_targ = random.randint(0, len(targets) - 1)
+        i_targ = randint(0, len(targets) - 1)
         target = targets[i_targ]
         result = {'Spell played': self.info['name'],
                   'Target': target.info['name']}
