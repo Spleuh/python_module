@@ -1,4 +1,4 @@
-from Card import Card, ErrCard
+from ex0.Card import Card, ErrCard
 
 
 class ErrCreatureC(ErrCard):

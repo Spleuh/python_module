@@ -1,5 +1,5 @@
-from CreatureCard import CreatureCard, ErrCreatureC
-from Card import ErrCard
+from ex0.CreatureCard import CreatureCard, ErrCreatureC
+from ex0.Card import ErrCard
 
 
 def main():
