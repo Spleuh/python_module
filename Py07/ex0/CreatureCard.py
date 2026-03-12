@@ -1,7 +1,7 @@
-from Card import Card
+from Card import Card, ErrCard
 
 
-class ErrCreatureC(Exception):
+class ErrCreatureC(ErrCard):
     def __init__(self, *args):
         super().__init__(*args)
 

@@ -1,6 +1,6 @@
-from .Card import Card
+import Card, CreatureCard
 
 
-__all__ = ['Card']
+__all__ = ['Card', 'CreatureCard']
 
 __author__ = "jsam"
