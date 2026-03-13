@@ -1,10 +1,19 @@
 from ex0.Card import Card
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Magical(Card):
-    def __init__(self, name: str, cost: int, rarity: str) -> None:
-        super().__init__(name, cost, rarity)
-    
+class Magical(ABC):
     @abstractmethod
-    def cast_spell()
+    def cast_spell(self, spell_name: str, targets: list) -> dict:
+        result = {'caster': self.info['name'],
+                  'spell': spell_name, 'targets': targets}
+        return result
+
+    @abstractmethod
+    def channel_mana(self, amount: int) -> dict:
+        result = {'channeled': amount}
+        return result
+
+    @abstractmethod
+    def get_magic_stats(self) -> dict:
+        pass

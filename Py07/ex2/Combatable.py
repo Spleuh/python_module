@@ -1,11 +1,8 @@
 from ex0 import Card
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Combatable(Card):
-    def __init__(self, name: str, cost: int, rarity: str) -> None:
-        super().__init__(name, cost, rarity)
-
+class Combatable(ABC):
     @abstractmethod
     def attack(self, target: Card) -> dict:
         result = {'attacker': self.info['name'], 'target': target.info['name']}
@@ -16,3 +13,7 @@ class Combatable(Card):
         result = {'defender': self.info['name'],
                   'damage_taken': incomming_damage}
         return result
+
+    @abstractmethod
+    def get_combat_stats(self) -> dict:
+        pass
