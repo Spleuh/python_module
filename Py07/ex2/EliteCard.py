@@ -5,7 +5,7 @@ from ex0.CreatureCard import CreatureCard
 
 
 class ErrEliteC(ErrCard):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
@@ -58,7 +58,7 @@ class EliteCard(Card, Combatable, Magical):
     def get_combat_stats(self) -> dict:
         return self.info['combat']
 
-    def cast_spell(self, spell_name: str, targets: list[CreatureCard]):
+    def cast_spell(self, spell_name: str, targets: list[CreatureCard]) -> dict:
         magic = self.info['magic']
         cost = "None"
         try:
@@ -73,7 +73,7 @@ class EliteCard(Card, Combatable, Magical):
                   'mana_used': cost}
         return result
 
-    def channel_mana(self, amount):
+    def channel_mana(self, amount) -> dict:
         if amount < 1:
             raise ErrEliteC(f"ErrEliteC: amount mana <= 0: {amount}")
         self.info['magic']['total_mana'] += amount
@@ -81,8 +81,8 @@ class EliteCard(Card, Combatable, Magical):
                   'total_mana': self.info['magic']['total_mana']}
         return result
 
-    def get_magic_stats(self):
+    def get_magic_stats(self) -> dict:
         return self.info['magic']
 
-    def play(self, game_state):
+    def play(self, game_state) -> dict:
         return super().play(game_state)
