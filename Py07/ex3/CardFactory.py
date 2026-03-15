@@ -3,7 +3,7 @@ from ex0.Card import Card
 from ex0.CreatureCard import CreatureCard
 from ex1.SpellCard import SpellCard
 from ex1.ArtifactCard import ArtifactCard
-from random import randint
+from random import randint, choice
 
 
 class ErrFacto(Exception):
@@ -93,16 +93,27 @@ class CardFactory(ABC):
 
     @abstractmethod
     def create_themed_deck(self, size: int) -> dict:
-        creature = self.create_creature()
-        spell = self.create_spell()
-        artifact = self.create_artifact()
-        result = {'creature': creature, 'spell': spell, 'artifact': artifact}
+        if size < 60:
+            raise ErrFacto(
+                f"ErrFacto: Deck must contain at least 60cards: {size}")
+        result = {'creatures': [], 'spells': [], 'artifacts': []}
+        for _ in size:
+            type = randint(0, 2)
+            if type == 0:
+                card = choice(self.create_creature())
+                result['creatures'].append(card)
+            elif type == 1:
+                card = choice(self.create_spell())
+                result['spells'].append(card)
+            else:
+                card = choice(self.create_artifact())
+                result['artifacts'].append(card)
         return result
 
     @abstractmethod
     def get_supported_types(self) -> dict:
         result = {
-            'creatures': self.creatures,
-            'spells': self.spells,
-            'artifacts': self.artifacts}
+            'creatures': self.creatures.keys(),
+            'spells': self.spells.keys(),
+            'artifacts': self.artifacts.keys()}
         return result

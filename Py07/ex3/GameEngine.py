@@ -10,7 +10,8 @@ class GameEngine():
             self,
             factory: CardFactory,
             strategy: GameStrategy) -> None:
-        pass
+        self.factory = factory
+        self.strategy = strategy
 
     def simulate_turn(self) -> dict:
         pass

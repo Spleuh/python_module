@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
 
 
+class ErrStrategy(Exception):
+    def __init__(self, msg):
+        super().__init__(msg)
+
+
 class GameStrategy(ABC):
     @abstractmethod
     def execute_turn(self, hand: list, battlefield: list) -> dict:
