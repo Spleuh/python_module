@@ -1,8 +1,8 @@
-from ex1.SpellCard import SpellCard, ErrSpellC
-from ex1.ArtifactCard import ArtifactCard, ErrArtifactC
+from ex1.SpellCard import SpellCard
+from ex1.ArtifactCard import ArtifactCard
 from ex1.Deck import Deck, ErrDeck
 from ex0.Card import ErrCard
-from ex0.CreatureCard import CreatureCard, ErrCreatureC
+from ex0.CreatureCard import CreatureCard
 
 
 def main() -> None:

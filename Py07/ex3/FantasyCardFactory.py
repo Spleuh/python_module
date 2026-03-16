@@ -25,7 +25,7 @@ class FantasyCardFactory(CardFactory):
             'fireball': {
                 'cost': 4,
                 'rarity': 'Rare',
-                'effect_type': 'Deal 4 dammage to target'}}
+                'effect': 'Deal 4 dammage to target'}}
         self.artifacts = {
             'mana_ring': {
                 'cost': 1,

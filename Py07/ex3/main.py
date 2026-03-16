@@ -1,20 +1,48 @@
-from ex3.GameEngine import GameEngine, Player
+from ex3.GameEngine import GameEngine
 from ex3.FantasyCardFactory import FantasyCardFactory
 from ex3.AggressiveStrategy import AggresiveStrategy
 
 
+def get_available_type(data: dict[str, dict[str, str | int]],
+                       available: dict, type: str) -> None:
+    for key in data.keys():
+        available[type].append(key)
+
+
 def main() -> None:
-    engine1 = GameEngine()
-    engine2 = GameEngine()
-    engine1.configure_engine(FantasyCardFactory(), AggresiveStrategy())
-    engine2.configure_engine(FantasyCardFactory(), AggresiveStrategy())
-    player1 = Player('jsam', engine1)
-    player2 = Player('ennemy', engine2)
-    battle_field = [{player1.name: player1.health}, {player2.name: player2.health}]
-    player1.setup_deck()
-    player1.draw(7)
-    for c in player1.hand:
-        print(c.info['name'])
+    print("\n=== DataDeck Game Engine ===\n")
+    print('Configuring Fantasy Card Game...')
+
+    factory = FantasyCardFactory()
+    print("Factory: FantasyCardFactory")
+
+    strategy = AggresiveStrategy()
+    print(f"Strategy: {strategy.get_strategy_name()}")
+
+    available_type = {'creatures': [], 'spells': [], 'artifacts': []}
+    get_available_type(factory.creatures, available_type, "creatures")
+    get_available_type(factory.spells, available_type, "spells")
+    get_available_type(factory.artifacts, available_type, "artifacts")
+    print(f"Available types: {available_type}\n")
+
+    engine = GameEngine("jsam", "Ennemy Player")
+    engine.configure_engine(factory, strategy)
+    engine.setup_ennemy_board()
+    engine.setup_deck()
+    engine.draw(7)
+
+    print('Simulating aggressive turn...')
+    print(f"Hand: [{', '.join(engine.get_hand())}]")
+
+    print('\nTurn execution:')
+    print(f"Strategy: {strategy.get_strategy_name()}")
+    print(f"Actions: {engine.simulate_turn()}")
+
+    print('\nGame Report:')
+    print(engine.get_engine_status())
+
+    print("\nAbstract Factory + Strategy "
+          "Pattern: Maximum flexibility achieved!")
 
 
 if __name__ == '__main__':

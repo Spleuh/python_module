@@ -24,11 +24,7 @@ class CreatureCard(Card):
 
     def attack_target(self, target: Card) -> dict:
         result = {'attacker': self.info['name'], 'target': target.info['name']}
-        if target.info['type'] == 'creature' and target.info['health'] > 0:
-            dmg_dealt = min(self.info['attack'], target.info['health'])
-            result.update({'damage_dealt': dmg_dealt, 'combat_resolved': True})
-        else:
-            raise ErrCreatureC("ErrorCreature: Target is not a "
-                               f"creature or target's health is 0: {target.info['name']} "
-                               f"{target.info['name']}")
+        dmg_dealt = min(self.info['attack'], target.info['health'])
+        result.update({'damage_dealt': dmg_dealt, 'combat_resolved': True})
+
         return result

@@ -3,7 +3,7 @@ from ex0.Card import Card
 from ex0.CreatureCard import CreatureCard
 from ex1.SpellCard import SpellCard
 from ex1.ArtifactCard import ArtifactCard
-from random import randint, choice
+from random import randint
 
 
 class ErrFacto(Exception):
@@ -69,7 +69,7 @@ class CardFactory(ABC):
             rand_key,
             rand_value['cost'],
             rand_value['rarity'],
-            rand_value['effect_type'])
+            rand_value['effect'])
         return result
 
     @abstractmethod

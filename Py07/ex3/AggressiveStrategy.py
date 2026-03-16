@@ -1,5 +1,4 @@
 from ex3.GameStrategy import GameStrategy, ErrStrategy
-from ex3.GameEngine import Player
 from ex0.Card import Card
 from ex0.CreatureCard import CreatureCard
 from ex1.ArtifactCard import ArtifactCard
@@ -18,49 +17,50 @@ class AggresiveStrategy(GameStrategy):
 
     def execute_turn(self, hand: list[Card],
                      battlefield: list[dict[str, Card | int]]) -> dict:
-        if len(battlefield) != 2:
+        if len(battlefield) != 3:
             raise ErrAggrStrategy(
                 "ErrAggreStrategy: battlefield can "
                 "contain only 2 sides self/opponent: "
                 f"{battlefield}")
-        creatures = [crea for crea in hand if isinstance(crea, CreatureCard)]
-        spells = [spell for spell in hand if isinstance(spell, SpellCard)]
-        artifacts = [arti for arti in hand if isinstance(arti, ArtifactCard)]
-        ally = ""
-        ennemy = ""
-        for side in battlefield:
-            if side.keys() == ["ally"]:
-                ally = side
-            else:
-                ennemy = side
-        if ally == "" or ennemy == "":
-            raise ErrAggrStrategy(
-                "ErrAggrStrategy: battlefield must have 2 sides: "
-                f"{battlefield}")
-        result = {'cards_played': [], 'mana_used': 0, 'targets_attacked': []}
         if len(hand) == 0:
             raise ErrAggrStrategy(
                 "ErrAggreStrategy: hand cant be null at "
                 f"start of turn: {hand}")
+        target = choice(battlefield[1])
+        cards = []
         if len(hand) == 1:
-            card = hand(0)
-            card.play()
-            if isinstance(card, CreatureCard):
-                target = choice(ennemy)
-                card.attack_target(target)
-                result['targets_attacked'].append(target)
-                # caca
-        if len(creatures) and len(spells):
-            creatures(randint(0, len(creatures) - 1)).play()
-            spells(randint(0, len(spells) - 1)).play()
-        elif len(creatures) > 1:
-            creatures(randint(0, len(creatures) - 1)).play()
-            creatures(randint(0, len(creatures) - 1)).play()
-        elif len(spells) > 1:
-            spells(randint(0, len(spells) - 1)).play()
-            spells(randint(0, len(spells) - 1)).play()
+            card1 = hand.pop()
+            cards.append(card1)
         else:
-            artifacts(randint(0, len(artifacts) - 1)).play()
+            card1 = hand.pop(randint(0, len(hand) - 1))
+            card2 = hand.pop(randint(0, len(hand) - 1))
+            cards.append(card1)
+            cards.append(card2)
+        result = self.resolve_effect(cards, battlefield, target)
+        return result
+
+    def resolve_effect(self,
+                       cards: list[Card],
+                       battlefield: list[dict], target: Card) -> dict:
+        result = {'cards_played': [],
+                  'mana_used': 0, 'targets_attacked': [], 'total_damage': 0}
+        for card in cards:
+            if isinstance(card, CreatureCard):
+                battlefield[0].append(card)
+                card.attack_target(target)
+                if target.info['name'] not in result['targets_attacked']:
+                    result['targets_attacked'].append(target.info['name'])
+                result['total_damage'] += card.info['attack']
+            elif isinstance(card, SpellCard):
+                card.resolve_effect([target])
+                damage = card.info['effect']
+                damage = int(''.join([c for c in damage if c.isdigit()]))
+                if target.info['name'] not in result['targets_attacked']:
+                    result['targets_attacked'].append(target.info['name'])
+                result['total_damage'] += damage
+            result['cards_played'].append(card.info['name'])
+            result['mana_used'] += card.info['cost']
+        return result
 
     def get_strategy_name(self) -> str:
         return "AggresiveStrategy"
@@ -68,7 +68,7 @@ class AggresiveStrategy(GameStrategy):
     def prioritize_targets(self,
                            available_targets: list[CreatureCard,
                                                    ArtifactCard,
-                                                   Player]) -> list:
+                                                   Card]) -> list:
         if available_targets is None:
             raise ErrAggrStrategy(
                 "ErrAggrStrategy: available_targets cant be empty: :"
