@@ -43,7 +43,8 @@ class FantasyCardFactory(CardFactory):
         elif isinstance(name_or_power, int):
             filtred = {
                 key: value for key,
-                value in self.creatures.items() if value['attack'] == name_or_power}
+                value in self.creatures.items()
+                if value['attack'] == name_or_power}
         rand_item = choice(list(filtred.items()))
         rand_key, rand_value = rand_item
         result = CreatureCard(
