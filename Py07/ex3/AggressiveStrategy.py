@@ -1,9 +1,9 @@
 from ex3.GameStrategy import GameStrategy, ErrStrategy
+from ex3.GameEngine import Player
 from ex0.Card import Card
 from ex0.CreatureCard import CreatureCard
 from ex1.ArtifactCard import ArtifactCard
 from ex1.SpellCard import SpellCard
-from ex3.main import Player
 from random import randint, choice
 
 
@@ -17,7 +17,7 @@ class AggresiveStrategy(GameStrategy):
         pass
 
     def execute_turn(self, hand: list[Card],
-                     battlefield: list[dict[str, Card]]) -> dict:
+                     battlefield: list[dict[str, Card | int]]) -> dict:
         if len(battlefield) != 2:
             raise ErrAggrStrategy(
                 "ErrAggreStrategy: battlefield can "
@@ -40,7 +40,8 @@ class AggresiveStrategy(GameStrategy):
         result = {'cards_played': [], 'mana_used': 0, 'targets_attacked': []}
         if len(hand) == 0:
             raise ErrAggrStrategy(
-                f"ErrAggreStrategy: hand cant be null at start of turn: {hand}")
+                "ErrAggreStrategy: hand cant be null at "
+                f"start of turn: {hand}")
         if len(hand) == 1:
             card = hand(0)
             card.play()
@@ -80,8 +81,8 @@ class AggresiveStrategy(GameStrategy):
                 data['opponent'].append(target)
         if len(data['opponent']) != 1:
             raise ErrAggrStrategy(
-                f"ErrAggrStrategy: Can only have 1 opponnent: {
-                    data['opponent']}")
+                "ErrAggrStrategy: Can only have 1 opponnent: "
+                f"{data['opponent']}")
         result = []
         if data['opponent'].health > 6:
             result.append(data['creatures'])

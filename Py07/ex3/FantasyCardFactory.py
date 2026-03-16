@@ -1,6 +1,6 @@
 from ex3.CardFactory import CardFactory, ErrFacto
 from ex0.Card import Card
-from ex0.CreatureCard import CreatureCard
+# from ex0.CreatureCard import CreatureCard
 
 
 class ErrFantFact(ErrFacto):
@@ -34,13 +34,21 @@ class FantasyCardFactory(CardFactory):
                 'effect': 'Permanent: +1 mana per turn'}}
 
     def create_creature(self, name_or_power=None) -> Card:
-        pass
+        result = super().create_creature(name_or_power)
+        return result
 
     def create_spell(self, name_or_power=None) -> Card:
-        pass
+        result = super().create_spell(name_or_power)
+        return result
 
     def create_artifact(self, name_or_power=None) -> Card:
-        pass
+        result = super().create_artifact(name_or_power)
+        return result
+
+    def create_themed_deck(self, size):
+        result = super().create_themed_deck(size)
+        return result
 
     def get_supported_types(self) -> dict:
-        pass
+        result = super().get_supported_types()
+        return result

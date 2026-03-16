@@ -14,9 +14,9 @@ class ErrFacto(Exception):
 class CardFactory(ABC):
     def __init__(self) -> None:
         self.creatures: dict[str, dict[str, str | int]] = {}
-        self.spells = []
-        self.artifacts = []
-        self.create = None
+        self.spells = dict[str, dict[str, str | int]] = {}
+        self.artifacts = dict[str, dict[str, str | int]] = {}
+        # self.create = None
 
     def random_key(
             self,
@@ -25,7 +25,7 @@ class CardFactory(ABC):
             raise ErrFacto(
                 f"ErrFacto: filtred data is null: {filtred_data}")
         lst_key = [key for key in filtred_data.keys()]
-        rand_key = lst_key(randint(0, len(lst_key) - 1))
+        rand_key = lst_key[randint(0, len(lst_key) - 1)]
         return rand_key
 
     def get_sub_dict(self, key: str, data: dict) -> dict:
@@ -97,16 +97,16 @@ class CardFactory(ABC):
             raise ErrFacto(
                 f"ErrFacto: Deck must contain at least 60cards: {size}")
         result = {'creatures': [], 'spells': [], 'artifacts': []}
-        for _ in size:
+        for _ in range(size):
             type = randint(0, 2)
             if type == 0:
-                card = choice(self.create_creature())
+                card = self.create_creature()
                 result['creatures'].append(card)
             elif type == 1:
-                card = choice(self.create_spell())
+                card = self.create_spell()
                 result['spells'].append(card)
             else:
-                card = choice(self.create_artifact())
+                card = self.create_artifact()
                 result['artifacts'].append(card)
         return result
 
