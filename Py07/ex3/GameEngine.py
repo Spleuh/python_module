@@ -46,9 +46,7 @@ class GameEngine():
 
     def setup_deck(self, size: int = 60) -> None:
         data_cards = self.factory.create_themed_deck(size)
-        lst_cards = []
-        for i in data_cards.values():
-            lst_cards += i
+        lst_cards = [card for cards in data_cards.values() for card in cards]
         deck = Deck(lst_cards)
         deck.shuffle()
         self.report['card_created'] += size
@@ -66,8 +64,7 @@ class GameEngine():
             raise ErrGameEngine("ErrGameEngine: quantity cards draw "
                                 f"cant be < 1: {quantity}")
         for i in range(quantity):
-            if isinstance(self.deck, Deck):
-                self.hand.append(self.deck.draw_card())
+            self.hand.append(self.deck.draw_card())
 
 
 class Player(Card):

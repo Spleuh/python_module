@@ -11,7 +11,7 @@ class ErrAggrStrategy(ErrStrategy):
         super().__init__(msg)
 
 
-class AggresiveStrategy(GameStrategy):
+class AggressiveStrategy(GameStrategy):
     def __init__(self) -> None:
         pass
 
@@ -63,11 +63,11 @@ class AggresiveStrategy(GameStrategy):
         return result
 
     def get_strategy_name(self) -> str:
-        return "AggresiveStrategy"
+        return "AggressiveStrategy"
 
     def prioritize_targets(self,
-                           available_targets: list[CreatureCard,
-                                                   ArtifactCard,
+                           available_targets: list[CreatureCard |
+                                                   ArtifactCard |
                                                    Card]) -> list:
         if available_targets is None:
             raise ErrAggrStrategy(

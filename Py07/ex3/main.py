@@ -1,12 +1,12 @@
 from ex3.GameEngine import GameEngine
 from ex3.FantasyCardFactory import FantasyCardFactory
-from ex3.AggressiveStrategy import AggresiveStrategy
+from ex3.AggressiveStrategy import AggressiveStrategy
 
 
 def get_available_type(data: dict[str, dict[str, str | int]],
-                       available: dict, type: str) -> None:
+                       available: dict, typ: str) -> None:
     for key in data.keys():
-        available[type].append(key)
+        available[typ].append(key)
 
 
 def main() -> None:
@@ -16,7 +16,7 @@ def main() -> None:
     factory = FantasyCardFactory()
     print("Factory: FantasyCardFactory")
 
-    strategy = AggresiveStrategy()
+    strategy = AggressiveStrategy()
     print(f"Strategy: {strategy.get_strategy_name()}")
 
     available_type = {'creatures': [], 'spells': [], 'artifacts': []}
