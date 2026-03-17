@@ -3,7 +3,8 @@ from ex0.Card import Card
 from ex0.CreatureCard import CreatureCard
 from ex1.ArtifactCard import ArtifactCard
 from ex1.SpellCard import SpellCard
-from random import randint, choice
+from random import choice
+from typing import Callable
 
 
 class ErrFantFact(ErrFacto):
@@ -35,6 +36,11 @@ class FantasyCardFactory(CardFactory):
                 'rarity': 'Legendary',
                 'durability': 6,
                 'effect': 'Permanent: +1 mana per turn'}}
+        self.create = {
+            'creatures': self.create_creature,
+            'spells': self.create_spell,
+            'artifacts': self.create_artifact
+        }
 
     def create_creature(self, name_or_power=None) -> Card:
         filtred = self.creatures
@@ -95,16 +101,22 @@ class FantasyCardFactory(CardFactory):
                 f"ErrFacto: Deck must contain at least 60cards: {size}")
         result = {'creatures': [], 'spells': [], 'artifacts': []}
         for _ in range(size):
-            type = randint(0, 2)
-            if type == 0:
-                card = self.create_creature()
-                result['creatures'].append(card)
-            elif type == 1:
-                card = self.create_spell()
-                result['spells'].append(card)
-            else:
-                card = self.create_artifact()
-                result['artifacts'].append(card)
+            rand_type = choice(list(result.keys()))
+            f = self.create.get(rand_type)
+            if f is None:
+                raise ErrFacto("ErrFacto: create methods "
+                               f"doesnt exist: {rand_type}")
+            card = self.create_card(f)
+            if card:
+                result[rand_type].append(card)
+        return result
+
+    def create_card(self, func: Callable[[], Card]) -> None | Card:
+        try:
+            result = func()
+        except Exception as e:
+            print(f"Error during creation card: {e}")
+            result = None
         return result
 
     def get_supported_types(self) -> dict:

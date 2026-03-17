@@ -49,7 +49,7 @@ class GameEngine():
         lst_cards = [card for cards in data_cards.values() for card in cards]
         deck = Deck(lst_cards)
         deck.shuffle()
-        self.report['card_created'] += size
+        self.report['card_created'] += len(deck.lst_card)
         self.deck = deck
 
     def setup_ennemy_board(self, size: int = 3) -> None:
