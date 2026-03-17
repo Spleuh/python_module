@@ -3,11 +3,11 @@ from ex4.TournamentPlatform import TournamentPlatform
 
 
 if __name__ == '__main__':
-    card = TournamentCard('Fire Dragon', 3, 'Legendary', 4, 4, 3, 1000)
-    card1 = TournamentCard('Fire Dragon', 3, 'Legendary', 4, 4, 3, 1000)
-    card2 = TournamentCard('Fire Dragon', 3, 'Legendary', 4, 4, 3, 1000)
-    test = TournamentCard('Fire Wizard', 3, 'Legendary', 4, 4, 3, 1000)
-    test2 = TournamentCard('Fire Wizard', 3, 'Legendary', 4, 4, 3, 1000)
+    card = TournamentCard('Fire Dragon', 3, 'Legendary', 4, 4, 3)
+    card1 = TournamentCard('Fire Dragon', 3, 'Legendary', 4, 4, 3)
+    card2 = TournamentCard('Fire Dragon', 3, 'Legendary', 4, 4, 3)
+    test = TournamentCard('Fire Wizard', 3, 'Legendary', 4, 4, 3)
+    test2 = TournamentCard('Fire Wizard', 3, 'Legendary', 4, 4, 3)
     platform = TournamentPlatform()
     print(platform.register_card(card))
     print(platform.register_card(test))
