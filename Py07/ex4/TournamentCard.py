@@ -12,9 +12,10 @@ class TournamentCard(Card, Combatable, Rankable):
                  health: int,
                  defense: int):
         super().__init__(name, cost, rarity)
-        self.info.update({'health': health, 'combat':
-                          {'attack': attack, 'defense': defense}})
-        self.info.update({'stats': {'win': 0, 'loose': 0, 'rank': None}})
+        info = {'health': health, 'combat':
+                {'attack': attack, 'defense': defense}}
+        info.update({'stats': {'win': 0, 'loose': 0, 'rank': None}})
+        self.info.update(info)
 
     def play(self, game_state: dict) -> dict:
         return super().play(game_state)

@@ -26,8 +26,8 @@ class EliteCard(Card, Combatable, Magical):
                         'defense': 3}})
 
     def attack(self, target: Card) -> dict:
-        if not isinstance(target, CreatureCard):
-            raise ErrEliteC("ErreliteC: target is not a creature: "
+        if not isinstance(target, Card):
+            raise ErrEliteC("ErreliteC: target is not a card: "
                             f"{target.info}")
         result = super().attack(target)
         combat_dict = self.info['combat']
