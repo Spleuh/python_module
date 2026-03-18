@@ -15,11 +15,12 @@ class TournamentCard(Card, Combatable, Rankable):
                  rarity: str,
                  attack: int,
                  health: int,
-                 defense: int):
+                 defense: int,
+                 rank: int):
         super().__init__(name, cost, rarity)
         info = {'health': health, 'combat':
                 {'attack': attack, 'defense': defense, 'combat_type': 'melee'}}
-        info.update({'stats': {'win': 0, 'loose': 0, 'rank': 1200}})
+        info.update({'stats': {'win': 0, 'loose': 0, 'rank': rank}})
         self.info.update(info)
 
     def play(self, game_state: dict) -> dict:
@@ -33,23 +34,49 @@ class TournamentCard(Card, Combatable, Rankable):
         combat_dict = self.info['combat']
         result.update({'damage': combat_dict['attack'],
                        'combat_type': combat_dict['combat_type']})
-        target.info['health'] -= result['damage']
         return result
 
     def defend(self, incomming_damage: int) -> dict:
-        return super().defend(incomming_damage)
+        result = super().defend(incomming_damage)
+        combat_dict = self.info['combat']
+        dmg_taken = combat_dict['defense'] - incomming_damage
+        if dmg_taken >= 0:
+            dmg_blocked = incomming_damage
+            dmg_taken = 0
+        else:
+            dmg_blocked = combat_dict['defense']
+            dmg_taken *= -1
+        self.info['health'] -= dmg_taken
+        alive = True
+        if self.info['health'] <= 0:
+            alive = False
+        result.update({'damage_taken': dmg_taken,
+                       'damage_blocked': dmg_blocked,
+                       'still_alive': alive})
+        return result
 
     def get_combat_stats(self) -> dict:
         return self.info['combat']
 
     def calculate_rating(self) -> int:
-        pass
+        self.info['stats']['rank'] += (
+            16 * self.info['stats']['win']
+            - 16 * self.info['stats']['loose'])
+        return self.info['stats']['rank']
 
     def update_wins(self, wins: int) -> None:
-        pass
+        if wins > -1:
+            self.info['stats']['win'] = wins
+
+    def get_wins(self) -> int:
+        return self.info['stats']['win']
 
     def update_losses(self, losses: int) -> None:
-        pass
+        if losses > -1:
+            self.info['stats']['loose'] = losses
+
+    def get_losses(self) -> int:
+        return self.info['stats']['loose']
 
     def get_rank_info(self) -> dict:
-        pass
+        return self.info['stats']

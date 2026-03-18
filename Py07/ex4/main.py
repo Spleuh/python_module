@@ -2,24 +2,35 @@ from ex4.TournamentCard import TournamentCard
 from ex4.TournamentPlatform import TournamentPlatform
 
 
-if __name__ == '__main__':
-    card = TournamentCard('Fire Dragon', 3, 'Legendary', 4, 4, 3)
-    card1 = TournamentCard('Fire Dragon', 3, 'Legendary', 4, 4, 3)
-    card2 = TournamentCard('Fire Dragon', 3, 'Legendary', 4, 4, 3)
-    test = TournamentCard('Fire Wizard', 3, 'Legendary', 4, 4, 3)
-    test2 = TournamentCard('Fire Wizard', 3, 'Legendary', 4, 4, 3)
+def main():
+    print('\n=== DataDeck Tournament Platform ===\n')
+    print('Registering Tournament Cards...\n')
     platform = TournamentPlatform()
-    print(platform.register_card(card))
-    print(platform.register_card(test))
-    print(platform.register_card(test2))
-    print(platform.register_card(card1))
-    print(platform.register_card(card2))
-    result_match = platform.create_match('dragon_0', 'wizard_0')
-    print(result_match)
-    lst_sorted = platform.get_leaderboard()
-    for i, card in enumerate(lst_sorted):
-        name = card.info['name']
-        rating = card.info['stats']['rank']
-        win = card.info['stats']['win']
-        loose = card.info['stats']['loose']
-        print(f"{i + 1}. {name} - Rating: {rating} ({win}-{loose})")
+    card1 = TournamentCard('Fire Dragon', 3, 'Legendary', 3, 4, 3, 1200)
+    card2 = TournamentCard('Ice Wizard', 3, 'Legendary', 3, 4, 2, 1150)
+    id1 = platform.register_card(card1)
+    id2 = platform.register_card(card2)
+    print(f"{card1.info['name']} (ID: {id1})")
+    print('- Interfaces: [Card, Combatable, Rankable]')
+    print(f'- Rating: {card1.get_rank_info()}\n')
+
+    print(f"{card1.info['name']} (ID: {id2})")
+    print('- Interfaces: [Card, Combatable, Rankable]')
+    print(f'- Rating: {card2.get_rank_info()}\n')
+
+    print('Creating tournament match...')
+    result_match = platform.create_match(id1, id2)
+    print(f'Match result: {result_match}\n')
+
+    print('Tournament Leaderboard:\n')
+    platform.print_leaderboard()
+
+    print('\nPlatform Report:')
+    print(platform.generate_tournament_report())
+
+    print('\n=== Tournament Platform Successfully Deployed! ===')
+    print('All abstract patterns working together harmoniously!\n')
+
+
+if __name__ == '__main__':
+    main()

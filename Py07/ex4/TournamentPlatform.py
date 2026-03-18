@@ -1,6 +1,7 @@
 from ex4.TournamentCard import TournamentCard
 from random import randint
 
+
 class ErrTourPlat(Exception):
     def __init__(self, msg):
         super().__init__(msg)
@@ -16,7 +17,7 @@ class TournamentPlatform:
     def register_card(self, card: TournamentCard) -> str:
         card_id = self.set_id(card.info['name'])
         self.info['cards'].update({card_id: card})
-        return f"Card resistred with id: {card_id}"
+        return f"{card_id}"
 
     def set_id(self, card_name: str) -> str:
         prefix = card_name.split(' ')[-1].lower()
@@ -33,7 +34,8 @@ class TournamentPlatform:
                   'loser_rating': 0}
         card1 = self.get_card(card1_id)
         card2 = self.get_card(card2_id)
-        self.simulate_match(card1, card2)
+        if not self.simulate_match(card1, card2):
+            return result
         health_1 = card1.info['health']
         health_2 = card2.info['health']
         winner = card2
@@ -41,27 +43,36 @@ class TournamentPlatform:
         if health_1 > health_2:
             winner = card1
             loser = card2
-        winner.info['stats']['win'] += 1
-        loser.info['stats']['loose'] += 1
+        winner.update_wins(winner.get_wins() + 1)
+        loser.update_losses(loser.get_losses() + 1)
+        winner.calculate_rating()
+        loser.calculate_rating()
         result['winner'] = winner.info['name']
         result['loser'] = loser.info['name']
-        winner.info['stats']['rank'] += 16
-        result['winnner_rating'] = winner.info['stats']['rank']
-        loser.info['stats']['rank'] -= 16
-        result['loser_rating'] = loser.info['stats']['rank']
+        result['winner_rating'] = winner.get_rank_info()['rank']
+        result['loser_rating'] = loser.get_rank_info()['rank']
+        self.info['match_played'] += 1
         return result
 
-    def simulate_match(self, card1: TournamentCard, card2: TournamentCard):
+    def simulate_match(self,
+                       card1: TournamentCard,
+                       card2: TournamentCard) -> bool:
         round = randint(0, 1)
-        while card1.info['health'] > 0 and card2.info['health'] > 0:
-            attacker = card2
-            defender = card1
+        while (card1.info['health'] > 0 and
+               card2.info['health'] > 0 and
+               round < 50):
+            attacker = card1
+            defender = card2
             if round % 2:
-                attacker = card1
-                defender = card2
+                attacker = card2
+                defender = card1
             result_attack = attacker.attack(defender)
             incomming_damage = result_attack['damage']
             defender.defend(incomming_damage)
+            round += 1
+        if round == 50:
+            return False
+        return True
 
     def get_card(self, id: str) -> TournamentCard:
         result = None
@@ -72,8 +83,27 @@ class TournamentPlatform:
         return result
 
     def get_leaderboard(self) -> list:
-        lst_sorted = sorted([card for card in self.info['cards'].values()], key=lambda x: x.info['stats']['rank'], reverse=True)
+        lst_sorted = sorted([card for card in self.info['cards'].values()],
+                            key=lambda x: x.info['stats']['rank'],
+                            reverse=True)
         return lst_sorted
 
+    def print_leaderboard(self) -> None:
+        lst_sorted = self.get_leaderboard()
+        for i, card in enumerate(lst_sorted):
+            name = card.info['name']
+            rating = card.info['stats']['rank']
+            win = card.info['stats']['win']
+            loose = card.info['stats']['loose']
+            print(f"{i + 1}. {name} - Rating: {rating} ({win}-{loose})")
+
     def generate_tournament_report(self) -> dict:
-        pass
+        info = self.info
+        lst_rating = [card.info['stats']['rank']
+                      for card in info['cards'].values()]
+        avg_rating = sum(lst_rating) // len(lst_rating)
+        result = {'total_cards': len(info['cards']),
+                  'match_played': info['match_played'],
+                  'avg_rating': avg_rating,
+                  'platform_status': info['platform_status']}
+        return result
