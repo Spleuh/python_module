@@ -2,7 +2,7 @@ from ex4.TournamentCard import TournamentCard
 from ex4.TournamentPlatform import TournamentPlatform
 
 
-def main():
+def main() -> None:
     print('\n=== DataDeck Tournament Platform ===\n')
     print('Registering Tournament Cards...\n')
     platform = TournamentPlatform()

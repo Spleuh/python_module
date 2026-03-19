@@ -4,7 +4,7 @@ from ex0.Card import Card
 
 
 class ErrTourCard(Exception):
-    def __init__(self, msg):
+    def __init__(self, msg: str) -> None:
         super().__init__(msg)
 
 
@@ -16,7 +16,7 @@ class TournamentCard(Card, Combatable, Rankable):
                  attack: int,
                  health: int,
                  defense: int,
-                 rank: int):
+                 rank: int) -> None:
         super().__init__(name, cost, rarity)
         info = {'health': health, 'combat':
                 {'attack': attack, 'defense': defense, 'combat_type': 'melee'}}

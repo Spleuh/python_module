@@ -42,7 +42,14 @@ class FantasyCardFactory(CardFactory):
             'artifacts': self.create_artifact
         }
 
-    def create_creature(self, name_or_power=None) -> Card:
+    def get_available_type(self) -> None:
+        result = {'creatures': [], 'spells': [], 'artifacts': []}
+        result['creatures'] = [key.lower() for key in self.creatures.keys()]
+        result['spells'] = [key for key in self.spells.keys()]
+        result['artifacts'] = [key for key in self.artifacts.keys()]
+        return result
+
+    def create_creature(self, name_or_power: str | int = None) -> Card:
         filtred = self.creatures
         if isinstance(name_or_power, str):
             filtred = self.get_sub_dict(name_or_power, filtred)
@@ -61,7 +68,7 @@ class FantasyCardFactory(CardFactory):
             rand_value['health'])
         return result
 
-    def create_spell(self, name_or_power=None) -> Card:
+    def create_spell(self, name_or_power: str | int = None) -> Card:
         filtred = self.spells
         if isinstance(name_or_power, int):
             raise ErrFacto(
@@ -77,7 +84,7 @@ class FantasyCardFactory(CardFactory):
             rand_value['effect'])
         return result
 
-    def create_artifact(self, name_or_power=None) -> Card:
+    def create_artifact(self, name_or_power: str | int = None) -> Card:
         filtred = self.artifacts
         if isinstance(name_or_power, int):
             raise ErrFacto(
@@ -95,7 +102,7 @@ class FantasyCardFactory(CardFactory):
             rand_value['effect'])
         return result
 
-    def create_themed_deck(self, size):
+    def create_themed_deck(self, size: int) -> dict:
         if size < 60:
             raise ErrFacto(
                 f"ErrFacto: Deck must contain at least 60cards: {size}")

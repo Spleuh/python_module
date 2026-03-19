@@ -3,12 +3,12 @@ from random import randint
 
 
 class ErrTourPlat(Exception):
-    def __init__(self, msg):
+    def __init__(self, msg: str):
         super().__init__(msg)
 
 
 class TournamentPlatform:
-    def __init__(self):
+    def __init__(self) -> None:
         self.info = {
             'cards': {},
             'match_played': 0,

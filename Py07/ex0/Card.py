@@ -9,8 +9,8 @@ class Rarity(Enum):
 
 
 class ErrCard(Exception):
-    def __init__(self, *args) -> None:
-        super().__init__(*args)
+    def __init__(self, msg: str) -> None:
+        super().__init__(msg)
 
 
 class Card(ABC):

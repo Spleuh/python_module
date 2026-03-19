@@ -3,12 +3,6 @@ from ex3.FantasyCardFactory import FantasyCardFactory
 from ex3.AggressiveStrategy import AggressiveStrategy
 
 
-def get_available_type(data: dict[str, dict[str, str | int]],
-                       available: dict, typ: str) -> None:
-    for key in data.keys():
-        available[typ].append(key)
-
-
 def main() -> None:
     print("\n=== DataDeck Game Engine ===\n")
     print('Configuring Fantasy Card Game...')
@@ -19,10 +13,7 @@ def main() -> None:
     strategy = AggressiveStrategy()
     print(f"Strategy: {strategy.get_strategy_name()}")
 
-    available_type = {'creatures': [], 'spells': [], 'artifacts': []}
-    get_available_type(factory.creatures, available_type, "creatures")
-    get_available_type(factory.spells, available_type, "spells")
-    get_available_type(factory.artifacts, available_type, "artifacts")
+    available_type = factory.get_available_type()
     print(f"Available types: {available_type}\n")
 
     engine = GameEngine("jsam", "Ennemy Player")

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class ErrStrategy(Exception):
-    def __init__(self, msg):
+    def __init__(self, msg: str) -> None:
         super().__init__(msg)
 
 

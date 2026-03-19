@@ -2,8 +2,8 @@ from ex0.Card import Card, ErrCard
 
 
 class ErrCreatureC(ErrCard):
-    def __init__(self, *args):
-        super().__init__(*args)
+    def __init__(self, msg: str) -> None:
+        super().__init__(msg)
 
 
 class CreatureCard(Card):
@@ -17,7 +17,7 @@ class CreatureCard(Card):
         self.info.update({'type': 'creature', 'attack': attack,
                           'health': health})
 
-    def play(self, game_state) -> dict:
+    def play(self, game_state: dict) -> dict:
         result = super().play(game_state)
         result.update({'effect': 'Creature summoned to battlefield'})
         return result

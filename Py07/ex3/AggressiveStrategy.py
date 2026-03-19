@@ -7,7 +7,7 @@ from random import randint, choice
 
 
 class ErrAggrStrategy(ErrStrategy):
-    def __init__(self, msg):
+    def __init__(self, msg: str) -> None:
         super().__init__(msg)
 
 
