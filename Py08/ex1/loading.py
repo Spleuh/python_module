@@ -11,8 +11,8 @@ def get_version(depend_name: str) -> str:
 def check_dependencies(lst_depend: list[str]) -> bool:
     check_all = True
     for depend_name in lst_depend:
-        if safe_exec(get_version, depend_name=depend_name):
-            version = safe_exec(get_version, depend_name=depend_name)
+        version = safe_exec(get_version, depend_name=depend_name)
+        if version:
             print(f'[OK] {depend_name} ({version})')
         else:
             check_all = False
@@ -21,9 +21,17 @@ def check_dependencies(lst_depend: list[str]) -> bool:
 
 def safe_exec(func: callable, **kwargs) -> Any:
      try:
-          return func(**kwargs)
-     except Exception:
-          return None
+        return func(**kwargs)
+     except FileNotFoundError as e:
+        print(f'File error: {e}')
+        return None
+     except ImportError as e:
+        print(f'Import error: ', end='')
+        return None
+     except Exception as e:
+        print(f'{e}')
+        return None
+
 
 
 def get_lst_depend(file: str) -> list[str]:
@@ -35,9 +43,14 @@ def get_lst_depend(file: str) -> list[str]:
 def demo_gen_data() -> None:
     from pandas import DataFrame
     from numpy.random import randn
+    print('\nAnalyzing Matrix data...')
+    print('Processing 1000 data points...')
+    print('Generating visualization...')
     data = randn(1000)
     data_frame = DataFrame(data, columns=['data'])
     print(data_frame)
+
+    print('\nAnalysis complete!')
 
 def main():
     print('LOADING STATUS: Loading programs...\n')
