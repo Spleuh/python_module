@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "loading"
+version = "1.0"
+description = "Python module 08"
+authors = ["jsam jsam@student.42lyon.fr"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "*"
+numpy = "*"
+matplotlib = "*"
+requests = "*"
