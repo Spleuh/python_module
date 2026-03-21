@@ -1,10 +1,11 @@
 from importlib import import_module
 from sys import exit
-from typing import Any
+from typing import Any, Callable
 
 
 def get_version(depend_name: str) -> str:
     module = import_module(depend_name)
+    # getattr(module, "__version__", "unknown")
     version = module.__version__
     return version
 
@@ -19,14 +20,14 @@ def check_dependencies(lst_depend: list[str]) -> bool:
             print(f'[KO] {depend_name} is missing')
     return check_all
 
-def safe_exec(func: callable, **kwargs) -> Any:
+def safe_exec(func: Callable, **kwargs) -> Any:
      try:
         return func(**kwargs)
      except FileNotFoundError as e:
         print(f'File error: {e}')
         return None
      except ImportError as e:
-        print(f'Import error: ', end='')
+        print(f'Import error: {e}: ', end='')
         return None
      except Exception as e:
         print(f'{e}')
@@ -43,12 +44,19 @@ def get_lst_depend(file: str) -> list[str]:
 def demo_gen_data() -> None:
     from pandas import DataFrame
     from numpy.random import randn
+    from matplotlib import pyplot
     print('\nAnalyzing Matrix data...')
     print('Processing 1000 data points...')
     print('Generating visualization...')
     data = randn(1000)
     data_frame = DataFrame(data, columns=['data'])
+    data_frame['moyenne'] = data_frame['data'].expanding().mean()
     print(data_frame)
+    pyplot.plot(data_frame['moyenne'])
+    # pyplot.hist(data_frame['data'])
+    
+    pyplot.title('test')
+    pyplot.savefig('test.png')
 
     print('\nAnalysis complete!')
 
