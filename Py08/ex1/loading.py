@@ -1,38 +1,50 @@
 from importlib import import_module
 from sys import exit
+from os import path, mkdir
 from typing import Any, Callable
 
 
 def get_version(depend_name: str) -> str:
     module = import_module(depend_name)
-    # getattr(module, "__version__", "unknown")
-    version = module.__version__
+    version = getattr(module, "__version__", "unknown")
+    # version = module.__version__
     return version
+
+
+def get_info(depend_name: str) -> str:
+    info = {
+        'pandas': 'Data manipulation ready',
+        'requests': 'Network access ready',
+        'matplotlib': 'Vizualization ready',
+        'numpy': 'Data generation ready'}
+    return info[depend_name]
+
 
 def check_dependencies(lst_depend: list[str]) -> bool:
     check_all = True
     for depend_name in lst_depend:
         version = safe_exec(get_version, depend_name=depend_name)
         if version:
-            print(f'[OK] {depend_name} ({version})')
+            info = safe_exec(get_info, depend_name=depend_name)
+            print(f'[OK] {depend_name} ({version}) - {info}')
         else:
             check_all = False
             print(f'[KO] {depend_name} is missing')
     return check_all
 
-def safe_exec(func: Callable, **kwargs) -> Any:
-     try:
+
+def safe_exec(func: Callable, **kwargs: Any) -> Any:
+    try:
         return func(**kwargs)
-     except FileNotFoundError as e:
+    except FileNotFoundError as e:
         print(f'File error: {e}')
         return None
-     except ImportError as e:
+    except ImportError as e:
         print(f'Import error: {e}: ', end='')
         return None
-     except Exception as e:
+    except Exception as e:
         print(f'{e}')
         return None
-
 
 
 def get_lst_depend(file: str) -> list[str]:
@@ -40,6 +52,7 @@ def get_lst_depend(file: str) -> list[str]:
     with open(file, 'r') as f:
         lst_depend = f.read().split('\n')
     return lst_depend
+
 
 def demo_gen_data() -> None:
     from pandas import DataFrame
@@ -53,12 +66,14 @@ def demo_gen_data() -> None:
     data_frame['moyenne'] = data_frame['data'].expanding().mean()
     print(data_frame)
     pyplot.plot(data_frame['moyenne'])
-    # pyplot.hist(data_frame['data'])
-    
-    pyplot.title('test')
-    pyplot.savefig('test.png')
+
+    pyplot.title('analysis')
+    if not path.exists('matrix'):
+        mkdir('matrix')
+    pyplot.savefig('matrix/analysis.png')
 
     print('\nAnalysis complete!')
+
 
 def main():
     print('LOADING STATUS: Loading programs...\n')
@@ -69,18 +84,23 @@ def main():
         exit(1)
     check_all = check_dependencies(lst_depend)
     if not check_all:
-        print('Please install missing dependencies then run this program again.\n')
+        print('Please install missing dependencies '
+              'then run this program again.\n')
         print('with pip: ')
-        print('create venv : python3 -m venv matrix_env')
-        print('activate venv : source matrix_env/bin/activate')
-        print('install requirements : pip install -r requirments.txt\n')
+        print('1. create venv : python3 -m venv matrix_env')
+        print('2. activate venv : source matrix_env/bin/activate')
+        print('3. install requirements : pip install -r requirments.txt\n')
         print('with poetry:')
-        print('create and install dependencies: poetry install')
-        print("activate venv manually: -get path to env with ('poetry env info --path') then activate with ('source <path>/bin/activate')")
-        print("OR execute programme with this command: poetry run python loading.py")
+        print('1. create and install dependencies: poetry install')
+        print("2. activate venv manually: -get path to env with "
+              "('poetry env info --path') then activate with "
+              "('source <path>/bin/activate')")
+        print("   OR execute programme with this command: "
+              "poetry run python loading.py")
         exit(1)
     else:
         demo_gen_data()
+
 
 if __name__ == '__main__':
     main()
