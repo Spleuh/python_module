@@ -73,6 +73,7 @@ def demo_gen_data() -> None:
     pyplot.savefig('matrix/analysis.png')
 
     print('\nAnalysis complete!')
+    print('Results saved to: matrix/analysis.png')
 
 
 def main():
