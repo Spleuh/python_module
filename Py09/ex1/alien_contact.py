@@ -1,5 +1,5 @@
 from enum import Enum
-from pydantic import BaseModel, model_validator, Field
+from pydantic import BaseModel, model_validator, Field  # type: ignore
 from datetime import datetime
 from typing import Optional, Callable, Any
 import json

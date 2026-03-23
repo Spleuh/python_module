@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError  # type: ignore
 from datetime import datetime
 from typing import Optional, Callable, Any
 import json
