@@ -39,15 +39,25 @@ def check_env() -> bool:
 
 def print_info(mode: str):
     if mode == 'development' or mode == 'production':
+        missing = 'DATABASE_URL is missing'
+        n_missing = 'Connected to local instance'
+        print("Database: "
+              f"{missing if not os.getenv('DATABASE_URL') else n_missing}")
+        missing = 'API_KEY is missing'
+        n_missing = 'Authentificated'
         print(
-            "Database: "
-            f"{'DATABASE_URL is missing' if not os.getenv('DATABASE_URL') else 'Connected to local instance'}")
+            "API Acces: "
+            f"{ missing if not os.getenv('API_KEY') else n_missing }")
+        missing = 'LOG_LEVEL is missing'
+        n_missing = 'DEBUG'
         print(
-            f"API Acces: {'API_KEY is missing' if not os.getenv('API_KEY') else 'Authentificated'}")
+            "Log Level: "
+            f"{missing if not os.getenv('LOG_LEVEL') else n_missing}")
+        missing = 'ZION_ENDPOINT is missing'
+        n_missing = 'Online'
         print(
-            f"Log Level: {'LOG_LEVEL is missing' if not os.getenv('LOG_LEVEL') else 'DEBUG'}")
-        print(
-            f"Zion Network: {'ZION_ENDPOINT is missing' if not os.getenv('ZION_ENDPOINT') else 'Online'}\n")
+            "Zion Network: "
+            f"{missing if not os.getenv('ZION_ENDPOINT') else n_missing}\n")
     else:
         print('Error: mode unknown\n')
 
@@ -57,8 +67,10 @@ def security_check(mode: str):
     print('Environment security check:')
     print('[OK] No hardcoded secrets detected')
     env_check = check_env()
-    print(f"[{'OK' if env_check else 'KO'}] .env file {'not ' if not env_check else ''}properly configured")
-    print(f"[{'OK' if prod else 'KO'}] Production overrides {'not ' if not prod else ''}available")
+    print(f"[{'OK' if env_check else 'KO'}] .env file "
+          f"{'not ' if not env_check else ''}properly configured")
+    print(f"[{'OK' if prod else 'KO'}] "
+          f"Production overrides {'not ' if not prod else ''}available")
 
 
 def main():

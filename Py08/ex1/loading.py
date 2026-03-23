@@ -7,7 +7,6 @@ from typing import Any, Callable
 def get_version(depend_name: str) -> str:
     module = import_module(depend_name)
     version = getattr(module, "__version__", "unknown")
-    # version = module.__version__
     return version
 
 
