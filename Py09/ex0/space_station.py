@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field, ValidationError
 from datetime import datetime
 from typing import Optional, Callable, Any
-from data_exporter import SpaceStationGenerator, DataConfig, create_test_scenarios
 import json
 
 
@@ -42,14 +41,14 @@ def print_station(station: SpaceStation):
 
 def main():
     print('Space Station Data Validation')
-    data_generator = SpaceStationGenerator(DataConfig())
-    lst_data = data_generator.generate_station_data()
-    create_test_scenarios()
-    for i in lst_data:
-        tmp = safe_exec(SpaceStation, **i)
-        if tmp:
-            print_station(tmp)
-    with open('generated_data/invalid_stations.json', 'r') as f:
+    with open('../generated_data/space_stations.json', 'r') as f:
+        valid_data = json.load(f)
+    if valid_data:
+        for i in valid_data:
+            tmp = safe_exec(SpaceStation, **i)
+            if tmp:
+                print_station(tmp)
+    with open('../generated_data/invalid_stations.json', 'r') as f:
         invalid_data = json.load(f)
     if invalid_data:
         for data in invalid_data:
