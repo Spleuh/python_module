@@ -27,17 +27,27 @@ def check_conf(key: str) -> bool:
 
 
 def check_env() -> bool:
-    lst_key = ['MATRIX_MODE', 'DATABASE_URL', 'API_KEY', 'LOG_LEVEL', 'ZION_ENDPOINT']
+    lst_key = [
+        'MATRIX_MODE',
+        'DATABASE_URL',
+        'API_KEY',
+        'LOG_LEVEL',
+        'ZION_ENDPOINT']
     result = all([os.getenv(key) for key in lst_key])
     return result
 
 
 def print_info(mode: str):
     if mode == 'development' or mode == 'production':
-        print(f"Database: {'DATABASE_URL is missing' if not os.getenv('DATABASE_URL') else 'Connected to local instance'}")
-        print(f"API Acces: {'API_KEY is missing' if not os.getenv('API_KEY') else 'Authentificated'}")
-        print(f"Log Level: {'LOG_LEVEL is missing' if not os.getenv('LOG_LEVEL') else 'DEBUG'}")
-        print(f"Zion Network: {'ZION_ENDPOINT is missing' if not os.getenv('ZION_ENDPOINT') else 'Online\n'}")
+        print(
+            "Database: "
+            f"{'DATABASE_URL is missing' if not os.getenv('DATABASE_URL') else 'Connected to local instance'}")
+        print(
+            f"API Acces: {'API_KEY is missing' if not os.getenv('API_KEY') else 'Authentificated'}")
+        print(
+            f"Log Level: {'LOG_LEVEL is missing' if not os.getenv('LOG_LEVEL') else 'DEBUG'}")
+        print(
+            f"Zion Network: {'ZION_ENDPOINT is missing' if not os.getenv('ZION_ENDPOINT') else 'Online'}\n")
     else:
         print('Error: mode unknown\n')
 
@@ -48,7 +58,7 @@ def security_check(mode: str):
     print('[OK] No hardcoded secrets detected')
     env_check = check_env()
     print(f"[{'OK' if env_check else 'KO'}] .env file {'not ' if not env_check else ''}properly configured")
-    print(f'[{'OK' if prod else 'KO'}] Production overrides {'not ' if not prod else ''}available')
+    print(f"[{'OK' if prod else 'KO'}] Production overrides {'not ' if not prod else ''}available")
 
 
 def main():
@@ -63,14 +73,14 @@ def main():
     dotenv.load_dotenv()
     print('Configuration loaded:')
 
-
     mode = os.getenv('MATRIX_MODE')
     print(f"Mode: {'MATRIX_MODE is missing' if not mode else mode}")
     if mode:
         print_info(mode)
-    
+
     security_check(mode)
     print('\nThe Oracle sees all configurations.')
+
 
 if __name__ == '__main__':
     main()
