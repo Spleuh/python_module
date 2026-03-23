@@ -79,7 +79,7 @@ def main():
               'Please intall then run this program again')
         sys.exit(1)
 
-    import dotenv
+    import dotenv  # type: ignore
     print('\nORACLE STATUS: Reading the Matrix...\n')
 
     dotenv.load_dotenv()

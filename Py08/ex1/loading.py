@@ -54,9 +54,9 @@ def get_lst_depend(file: str) -> list[str]:
 
 
 def demo_gen_data() -> None:
-    from pandas import DataFrame
-    from numpy.random import randn
-    from matplotlib import pyplot
+    from pandas import DataFrame  # type: ignore
+    from numpy.random import randn  # type: ignore
+    from matplotlib import pyplot  # type: ignore
     print('\nAnalyzing Matrix data...')
     print('Processing 1000 data points...')
     print('Generating visualization...')
