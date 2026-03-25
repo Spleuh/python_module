@@ -89,7 +89,7 @@ def main():
         print('with pip: ')
         print('1. create venv : python3 -m venv matrix_env')
         print('2. activate venv : source matrix_env/bin/activate')
-        print('3. install requirements : pip install -r requirments.txt\n')
+        print('3. install requirements : pip install -r requirements.txt\n')
         print('with poetry:')
         print('1. create and install dependencies: poetry install')
         print("2. activate venv manually: -get path to env with "
