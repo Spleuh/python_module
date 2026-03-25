@@ -15,7 +15,8 @@ def safe_exec(f: Callable, **kwargs: Any):
 
 
 def check_depend() -> bool:
-    import dotenv
+    import dotenv  # type: ignore
+    dotenv.load_dotenv()
     return True
 
 
@@ -79,10 +80,10 @@ def main():
               'Please intall then run this program again')
         sys.exit(1)
 
-    import dotenv  # type: ignore
+    # import dotenv  # type: ignore
     print('\nORACLE STATUS: Reading the Matrix...\n')
 
-    dotenv.load_dotenv()
+    # dotenv.load_dotenv()
     print('Configuration loaded:')
 
     mode = os.getenv('MATRIX_MODE')
