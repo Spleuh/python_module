@@ -15,7 +15,6 @@ class SpaceStation(BaseModel):
     notes: Optional[str] = Field(default=None, max_length=200)
 
 
-
 def safe_exec(f: Callable, **kwargs: Any) -> Any:
     try:
         return f(**kwargs)
@@ -35,7 +34,8 @@ def print_station(station: SpaceStation):
     print(f"Crew: {station.crew_size} people")
     print(f"Power: {station.power_level}%")
     print(f"Oxygen: {station.oxygen_level}%")
-    print(f"Status: {'Operational' if station.is_operational else 'Not operational'}")
+    print("Status: "
+          f"{'Operational' if station.is_operational else 'Not operational'}")
     print('========================================\n')
 
 
