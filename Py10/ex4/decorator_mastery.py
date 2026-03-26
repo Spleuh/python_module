@@ -7,6 +7,7 @@ from random import randint
 def spell_timer(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
+        print(f"Casting {getattr(func, '__name__')}...")
         start = time()
         result = func(*args, **kwargs)
         end = time()
@@ -67,7 +68,7 @@ class MageGuild:
 
 
 @spell_timer
-def fire_ball() -> str:
+def fireball() -> str:
     return 'Fireball cast!'
 
 
@@ -82,8 +83,7 @@ def retry_test() -> str:
 
 def main():
     print("\nTesting spell timer...")
-    print("Casting fireball...")
-    result = fire_ball()
+    result = fireball()
     print(f"Result: {result}")
 
     print('\nTesting MageGuild...')
