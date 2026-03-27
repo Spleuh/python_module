@@ -1,5 +1,6 @@
 from enum import Enum
-from pydantic import BaseModel, Field, model_validator  # type: ignore
+from pydantic import (BaseModel, Field, model_validator,  # type: ignore
+                      ValidationError)
 from datetime import datetime
 from typing import Callable, Any
 import os
@@ -38,7 +39,7 @@ class SpaceMission(BaseModel):
     budget_millions: float = Field(ge=1.0, le=10000.0)
 
     @model_validator(mode='after')
-    def custom_validator(self) -> None:
+    def custom_validator(self) -> 'SpaceMission':
         if not self.mission_id[0:1] == 'M':
             raise ValueError(f"ID must start with 'M': {self.mission_id}")
         lst_crew_rank = [member.rank.value for member in self.crew]
@@ -56,6 +57,7 @@ class SpaceMission(BaseModel):
         lst_active = [member.is_active for member in self.crew]
         if not all(lst_active):
             raise ValueError("All crew members must be active")
+        return self
 
     def print_info(self) -> None:
         print('=========================================')
@@ -77,8 +79,10 @@ class SpaceMission(BaseModel):
 def safe_exec(f: Callable, **kwargs: Any) -> Any:
     try:
         return f(**kwargs)
-    except ValueError as e:
-        print(f"ValueError: {e}")
+    except ValidationError as e:
+        print("ValidationError:")
+        for i in range(len(e.errors())):
+            print(f"{e.errors()[i]['msg']}")
         return None
     except Exception as e:
         print(f"{e}")
@@ -87,7 +91,9 @@ def safe_exec(f: Callable, **kwargs: Any) -> Any:
 
 def main() -> None:
     print('Space Mission Crew Validation')
-    data_path = os.path.abspath('generated_data/space_missions.json')
+    data_path1 = os.path.abspath('generated_data/space_missions.json')
+    data_path2 = os.path.abspath('../generated_data/space_missions.json')
+    data_path = data_path1 if os.path.exists(data_path1) else data_path2
     if not os.path.exists(data_path):
         print('Generate data with data exporter')
         exit()

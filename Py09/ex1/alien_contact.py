@@ -1,5 +1,6 @@
 from enum import Enum
-from pydantic import BaseModel, model_validator, Field  # type: ignore
+from pydantic import (BaseModel, model_validator, Field,  # type: ignore
+                      ValidationError)
 from datetime import datetime
 from typing import Optional, Callable, Any
 import os
@@ -25,7 +26,7 @@ class AlienContact(BaseModel):
     is_verified: bool = False
 
     @model_validator(mode='after')
-    def custom_validator(self) -> None:
+    def custom_validator(self) -> 'AlienContact':
         if not self.contact_id[0:2] == 'AC':
             raise ValueError(f"ID must start with 'AC': {self.contact_id}")
         if self.contact_type == ContactType.PHYSICAL and not self.is_verified:
@@ -48,7 +49,7 @@ class AlienContact(BaseModel):
         print(f'ID: {self.contact_id}')
         print(f'Type: {self.contact_type.value}')
         print(f'Location: {self.location}')
-        print(f'Signal: {self.signal_strength / 10:.1f}/10')
+        print(f'Signal: {self.signal_strength}/10')
         print(f"Duration: {self.duration_minutes} "
               f"{'minute' if self.duration_minutes < 2 else 'minutes'}")
         print(f'Witnesses: {self.witness_count}')
@@ -59,8 +60,10 @@ class AlienContact(BaseModel):
 def safe_exec(f: Callable, **kwargs: Any) -> Any:
     try:
         return f(**kwargs)
-    except ValueError as e:
-        print(f"ValueError: {e}")
+    except ValidationError as e:
+        print('ValidationError')
+        for i in range(len(e.errors())):
+            print(f"{e.errors()[i]['msg']}")
         return None
     except Exception as e:
         print(f"{type(e).__name__}: {e}")
@@ -69,11 +72,17 @@ def safe_exec(f: Callable, **kwargs: Any) -> Any:
 
 def main() -> None:
     print('Alien Contact Log Validation')
-    data_path = os.path.abspath('generated_data/alien_contacts.json')
-    inv_data_path = os.path.abspath('generated_data/invalid_contacts.json')
+    data_path1 = os.path.abspath('generated_data/alien_contacts.json')
+    data_path2 = os.path.abspath('../generated_data/alien_contacts.json')
+    data_path = data_path1 if os.path.exists(data_path1) else data_path2
+    inv_data_path1 = os.path.abspath('generated_data/invalid_contacts.json')
+    inv_data_path2 = os.path.abspath('../generated_data/invalid_contacts.json')
+    inv_data_path = (inv_data_path1 if os.path.exists(inv_data_path1)
+                     else inv_data_path2)
     if not os.path.exists(data_path) or not os.path.exists(inv_data_path):
         print('Generate data with data exporter')
         exit()
+
     with open(data_path, 'r') as f:
         data = json.load(f)
     if data:

@@ -20,7 +20,9 @@ def safe_exec(f: Callable, **kwargs: Any) -> Any:
     try:
         return f(**kwargs)
     except ValidationError as e:
-        print(f'ValidationError: \n{e}\n')
+        print('\nValidationError: ')
+        for i in range(len(e.errors())):
+            print(f'{e.errors()[i]["msg"]}')
         return None
     except Exception as e:
         print(f'{e}')
@@ -42,8 +44,13 @@ def print_station(station: SpaceStation) -> None:
 
 def main() -> None:
     print('Space Station Data Validation')
-    data_path = os.path.abspath('generated_data/space_stations.json')
-    inv_data_path = os.path.abspath('generated_data/invalid_stations.json')
+    data_path1 = os.path.abspath('generated_data/space_stations.json')
+    data_path2 = os.path.abspath('../generated_data/space_stations.json')
+    inv_data_path1 = os.path.abspath('generated_data/invalid_stations.json')
+    inv_data_path2 = os.path.abspath('../generated_data/invalid_stations.json')
+    data_path = data_path1 if os.path.exists(data_path1) else data_path2
+    inv_data_path = (inv_data_path1 if os.path.exists(inv_data_path1)
+                     else inv_data_path2)
     if not os.path.exists(data_path) or not os.path.exists(inv_data_path):
         print('Generate data with data exporter')
         exit()
