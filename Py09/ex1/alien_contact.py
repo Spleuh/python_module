@@ -2,6 +2,7 @@ from enum import Enum
 from pydantic import BaseModel, model_validator, Field  # type: ignore
 from datetime import datetime
 from typing import Optional, Callable, Any
+import os
 import json
 
 
@@ -24,7 +25,7 @@ class AlienContact(BaseModel):
     is_verified: bool = False
 
     @model_validator(mode='after')
-    def custom_validator(self):
+    def custom_validator(self) -> None:
         if not self.contact_id[0:2] == 'AC':
             raise ValueError(f"ID must start with 'AC': {self.contact_id}")
         if self.contact_type == ContactType.PHYSICAL and not self.is_verified:
@@ -68,7 +69,12 @@ def safe_exec(f: Callable, **kwargs: Any) -> Any:
 
 def main() -> None:
     print('Alien Contact Log Validation')
-    with open('../generated_data/alien_contacts.json', 'r') as f:
+    data_path = os.path.abspath('generated_data/alien_contacts.json')
+    inv_data_path = os.path.abspath('generated_data/invalid_contacts.json')
+    if not os.path.exists(data_path) or not os.path.exists(inv_data_path):
+        print('Generate data with data exporter')
+        exit()
+    with open(data_path, 'r') as f:
         data = json.load(f)
     if data:
         for i in data:
@@ -76,7 +82,7 @@ def main() -> None:
             if tmp:
                 tmp.print_var()
 
-    with open('../generated_data/invalid_contacts.json', 'r') as f:
+    with open(inv_data_path, 'r') as f:
         invalid_data = json.load(f)
     if invalid_data:
         for i in invalid_data:

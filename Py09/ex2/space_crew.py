@@ -2,6 +2,7 @@ from enum import Enum
 from pydantic import BaseModel, Field, model_validator  # type: ignore
 from datetime import datetime
 from typing import Callable, Any
+import os
 import json
 
 
@@ -37,7 +38,7 @@ class SpaceMission(BaseModel):
     budget_millions: float = Field(ge=1.0, le=10000.0)
 
     @model_validator(mode='after')
-    def custom_validator(self):
+    def custom_validator(self) -> None:
         if not self.mission_id[0:1] == 'M':
             raise ValueError(f"ID must start with 'M': {self.mission_id}")
         lst_crew_rank = [member.rank.value for member in self.crew]
@@ -84,9 +85,13 @@ def safe_exec(f: Callable, **kwargs: Any) -> Any:
         return None
 
 
-def main():
+def main() -> None:
     print('Space Mission Crew Validation')
-    with open('../generated_data/space_missions.json', 'r') as f:
+    data_path = os.path.abspath('generated_data/space_missions.json')
+    if not os.path.exists(data_path):
+        print('Generate data with data exporter')
+        exit()
+    with open(data_path, 'r') as f:
         data = json.load(f)
     if data:
         for i in data:

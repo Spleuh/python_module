@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, ValidationError  # type: ignore
 from datetime import datetime
 from typing import Optional, Callable, Any
+import os
 import json
 
 
@@ -26,7 +27,7 @@ def safe_exec(f: Callable, **kwargs: Any) -> Any:
         return None
 
 
-def print_station(station: SpaceStation):
+def print_station(station: SpaceStation) -> None:
     print('========================================')
     print('Valid station created:')
     print(f"ID: {station.station_id}")
@@ -39,16 +40,21 @@ def print_station(station: SpaceStation):
     print('========================================\n')
 
 
-def main():
+def main() -> None:
     print('Space Station Data Validation')
-    with open('../generated_data/space_stations.json', 'r') as f:
+    data_path = os.path.abspath('generated_data/space_stations.json')
+    inv_data_path = os.path.abspath('generated_data/invalid_stations.json')
+    if not os.path.exists(data_path) or not os.path.exists(inv_data_path):
+        print('Generate data with data exporter')
+        exit()
+    with open(data_path, 'r') as f:
         valid_data = json.load(f)
     if valid_data:
         for i in valid_data:
             tmp = safe_exec(SpaceStation, **i)
             if tmp:
                 print_station(tmp)
-    with open('../generated_data/invalid_stations.json', 'r') as f:
+    with open(inv_data_path, 'r') as f:
         invalid_data = json.load(f)
     if invalid_data:
         for data in invalid_data:
