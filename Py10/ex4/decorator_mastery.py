@@ -40,7 +40,9 @@ def retry_spell(max_attempts: int) -> Callable:
                     return func(*args, **kwargs)
                 except Exception:
                     if count < max_attempts:
-                        print(f'Spell failed, retrying...(attempt {count}/{max_attempts})')
+                        print(
+                            'Spell failed, retrying...(attempt '
+                            f'{count}/{max_attempts})')
                     count += 1
             return f'Spell casting failed after {max_attempts} attempts'
         return wrapper
@@ -51,19 +53,19 @@ class MageGuild:
     def __init__(self, name: str) -> None:
         self.name = name
         self.spells = {}
-                
+
     @staticmethod
     def valid_mage_name(name: str) -> bool:
         result = False
         if name:
             result = all((c.isalpha() or c == ' ') for c in name)
         return result
-    
+
     def add_spell(self, spell_name: str, spell: Callable) -> None:
         self.spells[spell_name] = spell
-    
+
     @power_validator(10)
-    def cast_spell(self, spell_name: str, power: int):
+    def cast_spell(self, spell_name: str, power: int) -> str:
         return 'Successfully cast ' + spell_name + f' with {power} power'
 
 
@@ -80,8 +82,7 @@ def retry_test() -> str:
     raise ValueError(f"rand is not odd: {rand}")
 
 
-
-def main():
+def main() -> None:
     print("\nTesting spell timer...")
     result = fireball()
     print(f"Result: {result}")

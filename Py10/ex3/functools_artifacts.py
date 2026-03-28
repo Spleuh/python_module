@@ -4,16 +4,16 @@ import operator
 
 
 class ErrorFibo(ValueError):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
 class ErrorSpellReducer(ValueError):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
 
 
-def safe_exec(f: Callable,*arg, **kwargs: Any) -> Any:
+def safe_exec(f: Callable, *arg: Any, **kwargs: Any) -> Any:
     try:
         return f(*arg, **kwargs)
     except ErrorSpellReducer as e:
@@ -28,7 +28,10 @@ def safe_exec(f: Callable,*arg, **kwargs: Any) -> Any:
 
 
 def spell_reducer(spells: list[int], operation: str) -> int:
-    supported = {'add': operator.add, 'multiply': operator.mul, 'max': max, 'min': min}
+    supported = {'add': operator.add,
+                 'multiply': operator.mul,
+                 'max': max,
+                 'min': min}
     if operation not in supported.keys():
         raise ErrorSpellReducer(f"Operation not supported: {operation}")
     return reduce(supported[operation], spells)
@@ -38,11 +41,12 @@ def base_enchant(power: int, element: str, target: str) -> str:
     return f"{element} spell hit {target} and deals {power} damage"
 
 
-def partial_enchanter(base_enchantment: Callable) -> dict[str, Callable]:
+def partial_enchanter(base_enchantment: Callable) -> dict:
     result = {
         'ice_enchant': partial(base_enchantment, power=50, element='Ice'),
         'fire_enchant': partial(base_enchantment, power=50, element='Fire'),
-        'lightning_enchant': partial(base_enchantment, power=50, element='Lightning')
+        'lightning_enchant': partial(base_enchantment,
+                                     power=50, element='Lightning')
         }
     return result
 
@@ -58,30 +62,30 @@ def memoized_fibonacci(n: int) -> int:
 
 def spell_dispatcher() -> Callable:
     @singledispatch
-    def cast_spell(spell: Any):
+    def cast_spell(spell: Any) -> str:
         return f"Cast unknown spell {spell}"
-    
+
     @cast_spell.register
-    def damage_spell(damage: int):
+    def damage_spell(damage: int) -> str:
         return f"Cast damage spell deal {damage} damage"
-    
+
     @cast_spell.register
-    def enchant_spell(enchant: str):
+    def enchant_spell(enchant: str) -> str:
         return f"Cast enchantment spell {enchant}"
-    
+
     @cast_spell.register
-    def multi_cast(spells: list):
-        result = [cast_spell(s) for s in spells]
-        result = "Multi-cast: " + ", ".join(result)
+    def multi_cast(spells: list) -> str:
+        lst_result = [cast_spell(s) for s in spells]
+        result = "Multi-cast: " + ", ".join(lst_result)
         return result
     return cast_spell
 
 
 def main() -> None:
-    print('\nTesting spell reducer...') 
-    print(f'Sum: {spell_reducer([10, 20, 30, 40], 'add')}')
-    print(f'Product: {spell_reducer([24, 100, 100], 'multiply')}')
-    print(f'Max: {spell_reducer([10, 20, 30, 40], 'max')}')
+    print('\nTesting spell reducer...')
+    print(f'Sum: {spell_reducer([10, 20, 30, 40], "add")}')
+    print(f'Product: {spell_reducer([24, 100, 100], "multiply")}')
+    print(f'Max: {spell_reducer([10, 20, 30, 40], "max")}')
 
     print('\nTesting partial enchant...')
     part = partial_enchanter(base_enchant)
